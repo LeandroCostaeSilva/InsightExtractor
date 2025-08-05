@@ -76,9 +76,12 @@ export function useAuth() {
     clearStoredAuth();
     
     toast({
-      title: "Logged out",
-      description: "You have been successfully logged out.",
+      title: "Logout realizado",
+      description: "Você foi desconectado com sucesso.",
     });
+    
+    // Navigate to login page
+    window.location.href = '/login';
   };
 
   return {
