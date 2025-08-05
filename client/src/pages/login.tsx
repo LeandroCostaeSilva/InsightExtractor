@@ -1,4 +1,4 @@
-import { useState } from 'react';
+import { useState, useEffect } from 'react';
 import { useAuth } from '@/hooks/use-auth';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
@@ -7,6 +7,7 @@ import { Card, CardContent } from '@/components/ui/card';
 import { Separator } from '@/components/ui/separator';
 import { FileText, Loader2 } from 'lucide-react';
 import { useLocation } from 'wouter';
+import { setStoredAuth } from '@/lib/auth';
 
 export default function LoginPage() {
   const [email, setEmail] = useState('');
@@ -15,6 +16,37 @@ export default function LoginPage() {
   const [isLoading, setIsLoading] = useState(false);
   const { login, register } = useAuth();
   const [, setLocation] = useLocation();
+
+  // Handle OAuth callback
+  useEffect(() => {
+    const urlParams = new URLSearchParams(window.location.search);
+    const token = urlParams.get('token');
+    const success = urlParams.get('success');
+    
+    if (token && success === 'true') {
+      // Store the OAuth token and navigate to dashboard
+      try {
+        // Decode JWT to get user info (basic decode without verification for client-side)
+        const payload = JSON.parse(atob(token.split('.')[1]));
+        const user = { 
+          id: payload.sub, 
+          email: payload.email,
+          password: '',
+          googleId: null,
+          githubId: null,
+          createdAt: new Date()
+        };
+        
+        setStoredAuth(user, token);
+        setLocation('/dashboard');
+        
+        // Clean up URL
+        window.history.replaceState({}, document.title, '/login');
+      } catch (error) {
+        console.error('Error processing OAuth token:', error);
+      }
+    }
+  }, [setLocation]);
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
@@ -125,7 +157,7 @@ export default function LoginPage() {
                   type="button"
                   variant="outline"
                   className="flex items-center justify-center"
-                  disabled
+                  onClick={() => window.location.href = '/api/auth/google'}
                   data-testid="button-google"
                 >
                   <svg className="w-4 h-4 mr-2" viewBox="0 0 24 24">
@@ -140,7 +172,7 @@ export default function LoginPage() {
                   type="button"
                   variant="outline"
                   className="flex items-center justify-center"
-                  disabled
+                  onClick={() => window.location.href = '/api/auth/github'}
                   data-testid="button-github"
                 >
                   <svg className="w-4 h-4 mr-2" fill="currentColor" viewBox="0 0 24 24">
@@ -148,6 +180,13 @@ export default function LoginPage() {
                   </svg>
                   GitHub
                 </Button>
+              </div>
+              
+              <div className="text-center">
+                <p className="text-xs text-gray-500">
+                  Para ativar autenticação OAuth, configure as variáveis de ambiente:<br/>
+                  GOOGLE_CLIENT_ID, GOOGLE_CLIENT_SECRET, GITHUB_CLIENT_ID, GITHUB_CLIENT_SECRET
+                </p>
               </div>
             </form>
           </CardContent>

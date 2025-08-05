@@ -49,6 +49,16 @@ PDF Insight Extractor is a complete full-stack web application that allows authe
 - Enhanced API with dedicated download endpoint for original PDF files
 - Automatic cleanup of temporary files after successful object storage upload
 
+✅ **OAuth Authentication System Implemented**
+- Added Google and GitHub OAuth authentication support
+- Extended user schema with googleId and githubId fields for OAuth linking
+- Implemented Passport.js strategies for both Google and GitHub
+- Created OAuth callback routes with JWT token generation
+- Updated frontend login page to handle OAuth flow and token processing
+- OAuth buttons now functional and redirect to respective authentication providers
+- Database schema updated and migrated to support OAuth fields
+- Session management configured for OAuth authentication flow
+
 ## User Preferences
 
 Preferred communication style: Simple, everyday language.

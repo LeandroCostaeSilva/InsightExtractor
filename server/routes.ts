@@ -6,9 +6,11 @@ import { registerSchema, loginSchema } from "@shared/schema";
 import { extractPDFContent, ensureUploadsDirectory, generateFileName } from "./pdfProcessor";
 import { analyzeDocument } from "./openaiService";
 import { ObjectStorageService, ObjectNotFoundError } from "./objectStorage";
+import { passport } from "./oauth";
 import multer from "multer";
 import path from "path";
 import fs from "fs";
+import session from "express-session";
 
 // Configure multer for file uploads
 const uploadsDir = ensureUploadsDirectory();
@@ -27,6 +29,59 @@ const upload = multer({
 });
 
 export async function registerRoutes(app: Express): Promise<Server> {
+  
+  // Configure session middleware for OAuth
+  app.use(session({
+    secret: process.env.SESSION_SECRET || 'your-session-secret',
+    resave: false,
+    saveUninitialized: false,
+    cookie: { secure: false } // Set to true if using HTTPS
+  }));
+  
+  // Initialize Passport
+  app.use(passport.initialize());
+  app.use(passport.session());
+  
+  // OAuth routes (only if credentials are configured)
+  if (process.env.GOOGLE_CLIENT_ID && process.env.GOOGLE_CLIENT_SECRET) {
+    app.get('/api/auth/google', passport.authenticate('google', { scope: ['profile', 'email'] }));
+    
+    app.get('/api/auth/google/callback', 
+      passport.authenticate('google', { failureRedirect: '/login' }),
+      (req, res) => {
+        // Successful authentication, generate JWT and redirect
+        const user = req.user as any;
+        const token = generateToken(user.id, user.email);
+        
+        // Redirect to frontend with token
+        res.redirect(`/login?token=${token}&success=true`);
+      }
+    );
+  } else {
+    app.get('/api/auth/google', (req, res) => {
+      res.status(501).json({ error: 'Google OAuth not configured. Please set GOOGLE_CLIENT_ID and GOOGLE_CLIENT_SECRET environment variables.' });
+    });
+  }
+  
+  if (process.env.GITHUB_CLIENT_ID && process.env.GITHUB_CLIENT_SECRET) {
+    app.get('/api/auth/github', passport.authenticate('github', { scope: ['user:email'] }));
+    
+    app.get('/api/auth/github/callback',
+      passport.authenticate('github', { failureRedirect: '/login' }),
+      (req, res) => {
+        // Successful authentication, generate JWT and redirect
+        const user = req.user as any;
+        const token = generateToken(user.id, user.email);
+        
+        // Redirect to frontend with token
+        res.redirect(`/login?token=${token}&success=true`);
+      }
+    );
+  } else {
+    app.get('/api/auth/github', (req, res) => {
+      res.status(501).json({ error: 'GitHub OAuth not configured. Please set GITHUB_CLIENT_ID and GITHUB_CLIENT_SECRET environment variables.' });
+    });
+  }
   
   // Auth routes
   app.post("/api/auth/register", async (req, res) => {
