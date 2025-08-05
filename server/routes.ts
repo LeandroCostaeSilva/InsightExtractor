@@ -136,12 +136,18 @@ export async function registerRoutes(app: Express): Promise<Server> {
       // Extract PDF content and metadata
       const pdfData = await extractPDFContent(finalPath);
       
+      // Validate publishedAt date before saving
+      let validPublishedAt: Date | undefined = undefined;
+      if (pdfData.publishedAt && !isNaN(pdfData.publishedAt.getTime())) {
+        validPublishedAt = pdfData.publishedAt;
+      }
+      
       // Create document record
       const document = await storage.createDocument({
         userId: req.user!.id,
         title: pdfData.title,
         authors: pdfData.authors,
-        publishedAt: pdfData.publishedAt,
+        publishedAt: validPublishedAt,
         filePath: finalPath,
         summary: null,
         insights: null,
@@ -182,11 +188,20 @@ export async function registerRoutes(app: Express): Promise<Server> {
         publishedAt: document.publishedAt || undefined,
       });
 
+      // Validate publishedAt date from analysis
+      let validAnalysisDate: Date | undefined = document.publishedAt || undefined;
+      if (analysis.metadata.publishedAt) {
+        const analysisDate = new Date(analysis.metadata.publishedAt);
+        if (!isNaN(analysisDate.getTime())) {
+          validAnalysisDate = analysisDate;
+        }
+      }
+
       // Update document with analysis results
       const updatedDocument = await storage.updateDocument(document.id, {
         title: analysis.metadata.title || document.title,
         authors: analysis.metadata.authors || document.authors,
-        publishedAt: analysis.metadata.publishedAt ? new Date(analysis.metadata.publishedAt) : document.publishedAt,
+        publishedAt: validAnalysisDate,
         summary: analysis.summary,
         insights: analysis.insights,
       });

@@ -26,7 +26,11 @@ export async function extractPDFContent(filePath: string): Promise<PDFMetadata> 
     // Try to extract publication date
     let publishedAt: Date | undefined;
     if (info.CreationDate) {
-      publishedAt = new Date(info.CreationDate);
+      const date = new Date(info.CreationDate);
+      // Validate that the date is valid
+      if (!isNaN(date.getTime())) {
+        publishedAt = date;
+      }
     }
 
     return {
