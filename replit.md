@@ -1,0 +1,92 @@
+# PDF Insight Extractor
+
+## Overview
+
+PDF Insight Extractor is a complete full-stack web application that allows authenticated users to upload PDF documents for automated metadata extraction and AI-powered insights generation. The application processes PDFs to extract basic information (title, authors, publication date) and uses OpenAI's GPT-4o model to generate comprehensive summaries and key insights. Users can manage their document library, view analysis results, and download processed files through an intuitive dashboard interface.
+
+## Recent Changes (January 5, 2025)
+
+✅ **Complete Application Built Successfully**
+- Full authentication system with JWT tokens and secure password hashing
+- PDF upload and processing with file validation (10MB limit, PDF-only)
+- AI-powered document analysis using OpenAI GPT-4o model
+- Comprehensive dashboard with document history sidebar
+- Results page displaying extracted metadata, summaries, and insights
+- Database integration with PostgreSQL and Drizzle ORM
+- All TypeScript errors resolved and application running successfully
+- OpenAI API key configured for AI-powered analysis
+
+## User Preferences
+
+Preferred communication style: Simple, everyday language.
+
+## System Architecture
+
+### Frontend Architecture
+- **Framework**: React with TypeScript, built using Vite for development and production builds
+- **Routing**: Wouter for client-side routing with protected routes for authenticated content
+- **UI Components**: Radix UI primitives with shadcn/ui component system for consistent design
+- **Styling**: Tailwind CSS with custom CSS variables for theming and responsive design
+- **State Management**: TanStack Query for server state management and caching
+- **File Upload**: Uppy.js components for drag-and-drop PDF upload functionality
+
+### Backend Architecture
+- **Runtime**: Node.js with Express.js framework
+- **Language**: TypeScript with ES modules
+- **Authentication**: JWT-based authentication with bcrypt for password hashing
+- **File Processing**: pdf-parse library for PDF content extraction and metadata parsing
+- **API Design**: RESTful endpoints with proper HTTP status codes and error handling
+
+### Database Layer
+- **ORM**: Drizzle ORM with PostgreSQL dialect for type-safe database operations
+- **Database**: Neon serverless PostgreSQL with connection pooling
+- **Schema**: Three main entities - users, documents, and extractions with proper foreign key relationships
+- **Migrations**: Drizzle Kit for schema migrations and database management
+
+### AI Integration
+- **Service**: OpenAI GPT-4o model for document analysis and insight generation
+- **Processing**: Structured JSON responses for consistent data formatting
+- **Analysis**: Generates executive summaries, key insights, and enhanced metadata extraction
+
+### Authentication System
+- **Strategy**: JWT tokens with 7-day expiration stored in localStorage
+- **Security**: Password hashing with bcrypt (12 rounds), secure token verification
+- **Protection**: Middleware-based route protection for API endpoints
+- **User Management**: Registration, login, and user session management
+
+### File Storage
+- **Upload Handling**: Multer middleware for multipart form data processing
+- **File Validation**: PDF-only uploads with 10MB size limit
+- **Storage Strategy**: Local file system storage with organized directory structure
+- **Download Support**: Secure file serving with proper headers and authentication checks
+
+## External Dependencies
+
+### Core Framework Dependencies
+- **@neondatabase/serverless**: Serverless PostgreSQL connection for Neon database
+- **drizzle-orm**: Type-safe ORM for database operations and query building
+- **@tanstack/react-query**: Data fetching and caching library for React
+- **wouter**: Lightweight routing library for React applications
+
+### Authentication & Security
+- **jsonwebtoken**: JWT token generation and verification
+- **bcryptjs**: Password hashing and comparison utilities
+
+### File Processing
+- **pdf-parse**: PDF content extraction and metadata parsing
+- **multer**: File upload handling middleware for Express
+
+### AI Services
+- **openai**: Official OpenAI API client for GPT-4o integration
+
+### UI & Styling
+- **@radix-ui/react-***: Headless UI components for accessibility and functionality
+- **tailwindcss**: Utility-first CSS framework
+- **@uppy/**: File upload components with drag-and-drop support
+- **lucide-react**: Icon library for consistent iconography
+
+### Development Tools
+- **vite**: Fast build tool and development server
+- **typescript**: Static type checking and enhanced developer experience
+- **tsx**: TypeScript execution for Node.js development
+- **esbuild**: Fast bundling for production builds
