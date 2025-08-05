@@ -57,99 +57,140 @@ export default function ResultsPage({ params }: ResultsPageProps) {
     if (!document) return;
     
     try {
-      // Create PDF content structure
+      // Create PDF content structure with proper A4 dimensions
       const pdf = new jsPDF('p', 'mm', 'a4');
-      const pageWidth = pdf.internal.pageSize.getWidth();
-      const pageHeight = pdf.internal.pageSize.getHeight();
-      const margin = 20;
-      let yPosition = margin;
+      const pageWidth = pdf.internal.pageSize.getWidth(); // 210mm
+      const pageHeight = pdf.internal.pageSize.getHeight(); // 297mm
+      const leftMargin = 25; // Margem esquerda maior para encadernação
+      const rightMargin = 20; // Margem direita
+      const topMargin = 25; // Margem superior
+      const bottomMargin = 25; // Margem inferior
+      const textWidth = pageWidth - leftMargin - rightMargin; // Largura útil do texto
+      let yPosition = topMargin;
       
-      // Set fonts
+      // Função para verificar se precisa de nova página
+      const checkNewPage = (neededSpace: number) => {
+        if (yPosition + neededSpace > pageHeight - bottomMargin) {
+          pdf.addPage();
+          yPosition = topMargin;
+          return true;
+        }
+        return false;
+      };
+      
+      // Cabeçalho com título
       pdf.setFont('helvetica', 'bold');
-      pdf.setFontSize(20);
+      pdf.setFontSize(18); // Tamanho reduzido para melhor formatação
       
-      // Title
       const title = document.title || 'Documento sem título';
-      const titleLines = pdf.splitTextToSize(title, pageWidth - 2 * margin);
-      pdf.text(titleLines, margin, yPosition);
-      yPosition += titleLines.length * 7 + 10;
+      const titleLines = pdf.splitTextToSize(title, textWidth);
+      pdf.text(titleLines, leftMargin, yPosition);
+      yPosition += titleLines.length * 8 + 15; // Espaçamento proporcional
       
-      // Document info
+      // Informações do documento
       pdf.setFont('helvetica', 'normal');
-      pdf.setFontSize(12);
+      pdf.setFontSize(10);
       
       if (document.authors) {
-        pdf.text(`Autores: ${document.authors}`, margin, yPosition);
-        yPosition += 8;
+        const authorsText = `Autores: ${document.authors}`;
+        const authorsLines = pdf.splitTextToSize(authorsText, textWidth);
+        checkNewPage(authorsLines.length * 5);
+        pdf.text(authorsLines, leftMargin, yPosition);
+        yPosition += authorsLines.length * 5 + 3;
       }
       
       if (document.publishedAt) {
-        pdf.text(`Data de Publicação: ${format(new Date(document.publishedAt), 'dd/MM/yyyy')}`, margin, yPosition);
+        const pubText = `Data de Publicação: ${format(new Date(document.publishedAt), 'dd/MM/yyyy')}`;
+        checkNewPage(5);
+        pdf.text(pubText, leftMargin, yPosition);
         yPosition += 8;
       }
       
-      pdf.text(`Processado em: ${format(new Date(document.createdAt), 'dd/MM/yyyy HH:mm')}`, margin, yPosition);
+      const processedText = `Processado em: ${format(new Date(document.createdAt), 'dd/MM/yyyy HH:mm')}`;
+      checkNewPage(5);
+      pdf.text(processedText, leftMargin, yPosition);
       yPosition += 15;
       
-      // Executive Summary
+      // Linha separadora
+      checkNewPage(10);
+      pdf.setDrawColor(200, 200, 200);
+      pdf.line(leftMargin, yPosition, pageWidth - rightMargin, yPosition);
+      yPosition += 15;
+      
+      // Resumo Executivo
       if (document.summary) {
+        checkNewPage(20);
         pdf.setFont('helvetica', 'bold');
-        pdf.setFontSize(16);
-        pdf.text('Resumo Executivo', margin, yPosition);
-        yPosition += 10;
+        pdf.setFontSize(14);
+        pdf.text('RESUMO EXECUTIVO', leftMargin, yPosition);
+        yPosition += 12;
         
         pdf.setFont('helvetica', 'normal');
-        pdf.setFontSize(11);
-        const summaryLines = pdf.splitTextToSize(document.summary, pageWidth - 2 * margin);
+        pdf.setFontSize(10);
         
-        // Check if we need a new page
-        if (yPosition + summaryLines.length * 5 > pageHeight - margin) {
-          pdf.addPage();
-          yPosition = margin;
-        }
+        // Dividir texto em parágrafos para melhor formatação
+        const paragraphs = document.summary.split('\n\n').filter(p => p.trim());
         
-        pdf.text(summaryLines, margin, yPosition);
-        yPosition += summaryLines.length * 5 + 15;
+        paragraphs.forEach((paragraph, index) => {
+          const paragraphLines = pdf.splitTextToSize(paragraph.trim(), textWidth);
+          
+          // Verificar se cabe na página atual
+          checkNewPage(paragraphLines.length * 4 + 8);
+          
+          pdf.text(paragraphLines, leftMargin, yPosition);
+          yPosition += paragraphLines.length * 4 + 8; // Espaçamento entre parágrafos
+        });
+        
+        yPosition += 10; // Espaço extra após resumo
       }
       
-      // Key Insights
+      // Principais Insights
       if (document.insights && Array.isArray(document.insights) && document.insights.length > 0) {
-        // Check if we need a new page
-        if (yPosition + 30 > pageHeight - margin) {
-          pdf.addPage();
-          yPosition = margin;
-        }
+        checkNewPage(25);
         
         pdf.setFont('helvetica', 'bold');
-        pdf.setFontSize(16);
-        pdf.text('Principais Insights', margin, yPosition);
-        yPosition += 10;
+        pdf.setFontSize(14);
+        pdf.text('PRINCIPAIS INSIGHTS', leftMargin, yPosition);
+        yPosition += 12;
         
         pdf.setFont('helvetica', 'normal');
-        pdf.setFontSize(11);
+        pdf.setFontSize(10);
         
-        document.insights.forEach((insight, index) => {
-          const insightText = `• ${insight}`;
-          const insightLines = pdf.splitTextToSize(insightText, pageWidth - 2 * margin - 5);
+        document.insights.forEach((insight: string, index: number) => {
+          const bulletText = `• ${insight}`;
+          const insightLines = pdf.splitTextToSize(bulletText, textWidth - 10);
           
-          // Check if we need a new page
-          if (yPosition + insightLines.length * 5 > pageHeight - margin) {
-            pdf.addPage();
-            yPosition = margin;
-          }
+          // Verificar se cabe na página atual
+          checkNewPage(insightLines.length * 4 + 6);
           
-          pdf.text(insightLines, margin, yPosition);
-          yPosition += insightLines.length * 5 + 5;
+          pdf.text(insightLines, leftMargin + 5, yPosition);
+          yPosition += insightLines.length * 4 + 6; // Espaçamento entre insights
         });
       }
       
-      // Footer with generation info
-      pdf.setFont('helvetica', 'italic');
-      pdf.setFontSize(8);
-      pdf.text('Gerado pelo PDF Insight Extractor', margin, pageHeight - 10);
+      // Rodapé em todas as páginas
+      const totalPages = pdf.internal.pages.length - 1; // -1 porque a primeira "página" é metadata
+      for (let i = 1; i <= totalPages; i++) {
+        pdf.setPage(i);
+        pdf.setFont('helvetica', 'italic');
+        pdf.setFontSize(8);
+        pdf.setTextColor(128, 128, 128);
+        
+        // Informação do gerador (esquerda)
+        pdf.text('Gerado pelo PDF Insight Extractor', leftMargin, pageHeight - 15);
+        
+        // Número da página (direita)
+        pdf.text(`Página ${i} de ${totalPages}`, pageWidth - rightMargin - 20, pageHeight - 15);
+      }
       
-      // Save the PDF
-      const fileName = `${document.title || 'documento'}_analise.pdf`.replace(/[^a-zA-Z0-9_-]/g, '_');
+      // Resetar cor do texto
+      pdf.setTextColor(0, 0, 0);
+      
+      // Salvar com nome limpo
+      const cleanTitle = document.title ? 
+        document.title.replace(/[^a-zA-Z0-9À-ÿ\s\-_]/g, '').substring(0, 50) : 
+        'documento';
+      const fileName = `${cleanTitle}_analise.pdf`;
       pdf.save(fileName);
       
     } catch (error) {

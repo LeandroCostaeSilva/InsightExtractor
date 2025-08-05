@@ -29,6 +29,17 @@ PDF Insight Extractor is a complete full-stack web application that allows authe
 - Updated UI labels to Portuguese (Resumo Executivo, Principais Insights)
 - All analysis content now generated in Portuguese regardless of source language
 
+✅ **PDF Export Functionality Implemented**
+- Combined Export Results and Share Results into single "Exportar PDF" button
+- Professional PDF formatting with proper A4 dimensions and margins:
+  - Left margin: 25mm (binding-friendly), Right margin: 20mm
+  - Top/bottom margins: 25mm for optimal readability
+  - Proper text width calculations to prevent content overflow
+- Enhanced PDF structure with automatic page breaks and pagination
+- Paragraph-aware text formatting for better readability
+- Professional footer with page numbering and generation info
+- Clean filename generation based on document title
+
 ## User Preferences
 
 Preferred communication style: Simple, everyday language.
