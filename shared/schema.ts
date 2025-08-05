@@ -18,6 +18,8 @@ export const documents = pgTable("documents", {
   authors: text("authors"),
   publishedAt: timestamp("published_at"),
   filePath: text("file_path").notNull(),
+  originalFileName: text("original_file_name"),
+  objectStoragePath: text("object_storage_path"), // Path to original file in object storage
   summary: text("summary"),
   insights: jsonb("insights"),
   createdAt: timestamp("created_at").defaultNow().notNull(),

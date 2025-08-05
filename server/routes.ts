@@ -5,6 +5,7 @@ import { authenticateToken, hashPassword, comparePassword, generateToken, type A
 import { registerSchema, loginSchema } from "@shared/schema";
 import { extractPDFContent, ensureUploadsDirectory, generateFileName } from "./pdfProcessor";
 import { analyzeDocument } from "./openaiService";
+import { ObjectStorageService, ObjectNotFoundError } from "./objectStorage";
 import multer from "multer";
 import path from "path";
 import fs from "fs";
@@ -128,7 +129,7 @@ export async function registerRoutes(app: Express): Promise<Server> {
         return res.status(400).json({ message: "No PDF file uploaded" });
       }
 
-      // Generate unique filename and move file
+      // Generate unique filename and move file to temp location
       const fileName = generateFileName(req.file.originalname);
       const finalPath = path.join(uploadsDir, fileName);
       fs.renameSync(req.file.path, finalPath);
@@ -142,18 +143,45 @@ export async function registerRoutes(app: Express): Promise<Server> {
         validPublishedAt = pdfData.publishedAt;
       }
       
-      // Create document record
+      // Create document record first to get the ID
       const document = await storage.createDocument({
         userId: req.user!.id,
         title: pdfData.title,
         authors: pdfData.authors,
         publishedAt: validPublishedAt,
         filePath: finalPath,
+        originalFileName: req.file.originalname,
+        objectStoragePath: null, // Will be updated after upload
         summary: null,
         insights: null,
       });
 
-      res.status(201).json(document);
+      try {
+        // Upload file to object storage
+        const fileBuffer = fs.readFileSync(finalPath);
+        const objectStorageService = new ObjectStorageService();
+        const objectPath = await objectStorageService.uploadDocumentFile(
+          document.id,
+          req.file.originalname,
+          fileBuffer,
+          'application/pdf'
+        );
+
+        // Update document with object storage path
+        await storage.updateDocument(document.id, {
+          objectStoragePath: objectPath
+        });
+
+        // Clean up local temp file
+        fs.unlinkSync(finalPath);
+
+        res.status(201).json(document);
+      } catch (objectStorageError) {
+        console.error("Object storage upload failed:", objectStorageError);
+        // Keep the local file as fallback and continue
+        console.log("Continuing with local file storage as fallback");
+        res.status(201).json(document);
+      }
     } catch (error: any) {
       console.error("Upload error:", error);
       
@@ -217,6 +245,53 @@ export async function registerRoutes(app: Express): Promise<Server> {
     } catch (error: any) {
       console.error("Analysis error:", error);
       res.status(500).json({ message: error.message || "Analysis failed" });
+    }
+  });
+
+  // Download original PDF document
+  app.get("/api/documents/:id/download", authenticateToken, async (req: AuthRequest, res) => {
+    try {
+      const document = await storage.getDocument(req.params.id);
+      
+      if (!document) {
+        return res.status(404).json({ message: "Document not found" });
+      }
+      
+      if (document.userId !== req.user!.id) {
+        return res.status(403).json({ message: "Access denied" });
+      }
+
+      const objectStorageService = new ObjectStorageService();
+
+      // Try to download from object storage first
+      if (document.objectStoragePath && document.originalFileName) {
+        try {
+          const file = await objectStorageService.getDocumentFile(document.id, document.originalFileName);
+          await objectStorageService.downloadObject(file, res);
+          return;
+        } catch (error) {
+          if (error instanceof ObjectNotFoundError) {
+            console.log("File not found in object storage, falling back to local file");
+          } else {
+            console.error("Object storage download error:", error);
+          }
+        }
+      }
+
+      // Fallback to local file if object storage fails or not available
+      if (document.filePath && fs.existsSync(document.filePath)) {
+        const filename = document.originalFileName || path.basename(document.filePath);
+        res.set({
+          'Content-Type': 'application/pdf',
+          'Content-Disposition': `attachment; filename="${filename}"`,
+        });
+        res.sendFile(path.resolve(document.filePath));
+      } else {
+        res.status(404).json({ message: "File not found" });
+      }
+    } catch (error: any) {
+      console.error("Download error:", error);
+      res.status(500).json({ message: error.message || "Download failed" });
     }
   });
 

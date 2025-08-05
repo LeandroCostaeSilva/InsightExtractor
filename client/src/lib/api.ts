@@ -72,11 +72,42 @@ export const api = {
   
   analyzeDocument: (id: string) => apiRequest('POST', `/api/documents/${id}/analyze`),
   
-  downloadDocument: (id: string) => {
-    const { token } = require('./auth').getStoredAuth();
-    const url = `/api/documents/${id}/download`;
-    if (token) {
-      window.open(`${url}?token=${encodeURIComponent(token)}`);
+  downloadDocument: async (id: string) => {
+    const headers = getAuthHeaders();
+    
+    try {
+      const response = await fetch(`/api/documents/${id}/download`, {
+        method: 'GET',
+        headers,
+      });
+
+      if (!response.ok) {
+        throw new ApiError(response.status, 'Download failed');
+      }
+
+      // Get the filename from the response headers
+      const contentDisposition = response.headers.get('Content-Disposition');
+      let filename = 'document.pdf';
+      if (contentDisposition) {
+        const match = contentDisposition.match(/filename[^;=\n]*=((['"]).*?\2|[^;\n]*)/);
+        if (match) {
+          filename = match[1].replace(/['"]/g, '');
+        }
+      }
+
+      // Create blob and download
+      const blob = await response.blob();
+      const url = URL.createObjectURL(blob);
+      const a = document.createElement('a');
+      a.href = url;
+      a.download = filename;
+      document.body.appendChild(a);
+      a.click();
+      document.body.removeChild(a);
+      URL.revokeObjectURL(url);
+    } catch (error) {
+      console.error('Download error:', error);
+      throw error;
     }
   },
 

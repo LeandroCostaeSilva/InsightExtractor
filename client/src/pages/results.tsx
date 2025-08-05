@@ -39,9 +39,14 @@ export default function ResultsPage({ params }: ResultsPageProps) {
     },
   });
 
-  const handleDownload = () => {
+  const handleDownload = async () => {
     if (document) {
-      api.downloadDocument(document.id);
+      try {
+        await api.downloadDocument(document.id);
+      } catch (error) {
+        console.error('Download failed:', error);
+        alert('Erro ao baixar o arquivo. Tente novamente.');
+      }
     }
   };
 

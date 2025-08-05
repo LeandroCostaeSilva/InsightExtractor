@@ -40,6 +40,15 @@ PDF Insight Extractor is a complete full-stack web application that allows authe
 - Professional footer with page numbering and generation info
 - Clean filename generation based on document title
 
+✅ **Object Storage Integration Completed**
+- Implemented complete object storage service using Google Cloud Storage
+- Original PDF files now stored in object storage with fallback to local storage
+- Added new database fields: originalFileName and objectStoragePath
+- Download functionality supports both object storage and local file fallback
+- Secure file upload and download with proper authentication
+- Enhanced API with dedicated download endpoint for original PDF files
+- Automatic cleanup of temporary files after successful object storage upload
+
 ## User Preferences
 
 Preferred communication style: Simple, everyday language.
