@@ -17,8 +17,7 @@ if (GOOGLE_CLIENT_ID && GOOGLE_CLIENT_SECRET) {
   passport.use(new GoogleStrategy({
     clientID: GOOGLE_CLIENT_ID,
     clientSecret: GOOGLE_CLIENT_SECRET,
-    callbackURL: "https://workspace.leandrovcs.replit.app/api/auth/google/callback",
-    scope: ['profile', 'email']
+    callbackURL: "https://workspace.leandrovcs.replit.app/api/auth/google/callback"
   }, async (accessToken: string, refreshToken: string, profile: any, done: any) => {
   try {
     const email = profile.emails?.[0]?.value;

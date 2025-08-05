@@ -44,17 +44,41 @@ export async function registerRoutes(app: Express): Promise<Server> {
   
   // OAuth routes (only if credentials are configured)
   if (process.env.GOOGLE_CLIENT_ID && process.env.GOOGLE_CLIENT_SECRET) {
-    app.get('/api/auth/google', passport.authenticate('google', { scope: ['profile', 'email'] }));
+    app.get('/api/auth/google', (req, res, next) => {
+      console.log('Initiating Google OAuth authentication...');
+      passport.authenticate('google', { 
+        scope: ['profile', 'email'],
+        accessType: 'offline',
+        prompt: 'consent'
+      })(req, res, next);
+    });
     
     app.get('/api/auth/google/callback', 
-      passport.authenticate('google', { failureRedirect: '/login' }),
+      (req, res, next) => {
+        console.log('Google OAuth callback received');
+        passport.authenticate('google', { 
+          failureRedirect: '/login?error=oauth_failed',
+          successRedirect: false
+        })(req, res, next);
+      },
       (req, res) => {
-        // Successful authentication, generate JWT and redirect
-        const user = req.user as any;
-        const token = generateToken(user.id, user.email);
-        
-        // Redirect to frontend with token
-        res.redirect(`/login?token=${token}&success=true`);
+        try {
+          // Successful authentication, generate JWT and redirect
+          const user = req.user as any;
+          if (!user) {
+            console.error('No user found after OAuth authentication');
+            return res.redirect('/login?error=no_user');
+          }
+          
+          const token = generateToken(user.id, user.email);
+          console.log('OAuth authentication successful for user:', user.email);
+          
+          // Redirect to frontend with token
+          res.redirect(`/login?token=${token}&success=true`);
+        } catch (error) {
+          console.error('Error in OAuth callback:', error);
+          res.redirect('/login?error=callback_error');
+        }
       }
     );
   } else {
