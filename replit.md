@@ -16,6 +16,19 @@ PDF Insight Extractor is a complete full-stack web application that allows authe
 - All TypeScript errors resolved and application running successfully
 - OpenAI API key configured for AI-powered analysis
 
+✅ **Recent Improvements Applied**
+- Fixed PDF upload error caused by invalid date metadata
+- Enhanced AI analysis to provide content in Portuguese Brazilian
+- Expanded executive summaries to 4-6 detailed paragraphs covering:
+  - Document overview and purpose
+  - Detailed chapter and section analysis
+  - Central themes and methodologies
+  - Key conclusions and recommendations
+  - Context and work relevance
+- Increased token limit to 3500 for more comprehensive analysis
+- Updated UI labels to Portuguese (Resumo Executivo, Principais Insights)
+- All analysis content now generated in Portuguese regardless of source language
+
 ## User Preferences
 
 Preferred communication style: Simple, everyday language.

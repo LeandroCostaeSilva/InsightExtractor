@@ -169,13 +169,13 @@ export default function ResultsPage({ params }: ResultsPageProps) {
               <CardContent className="p-6">
                 <h2 className="text-xl font-semibold text-gray-900 mb-4 flex items-center">
                   <FileText className="h-5 w-5 text-primary-500 mr-3" />
-                  Executive Summary
+                  Resumo Executivo
                 </h2>
                 <div className="prose prose-sm max-w-none text-gray-700" data-testid="text-summary">
                   {document.summary ? (
                     <div className="whitespace-pre-wrap">{document.summary}</div>
                   ) : (
-                    <p className="text-gray-500 italic">No summary available. The document may not have been analyzed yet.</p>
+                    <p className="text-gray-500 italic">Nenhum resumo disponível. O documento pode não ter sido analisado ainda.</p>
                   )}
                 </div>
               </CardContent>
@@ -188,7 +188,7 @@ export default function ResultsPage({ params }: ResultsPageProps) {
               <CardContent className="p-6">
                 <h2 className="text-xl font-semibold text-gray-900 mb-4 flex items-center">
                   <Lightbulb className="h-5 w-5 text-accent-500 mr-3" />
-                  Key Insights
+                  Principais Insights
                 </h2>
                 <div className="space-y-4" data-testid="list-insights">
                   {document.insights && Array.isArray(document.insights) ? (
@@ -202,7 +202,7 @@ export default function ResultsPage({ params }: ResultsPageProps) {
                     ))
                   ) : (
                     <p className="text-gray-500 italic text-sm">
-                      No insights available. The document may not have been analyzed yet.
+                      Nenhum insight disponível. O documento pode não ter sido analisado ainda.
                     </p>
                   )}
                 </div>

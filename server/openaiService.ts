@@ -26,37 +26,52 @@ export async function analyzeDocument(text: string, existingMetadata?: {
       messages: [
         {
           role: "system",
-          content: `You are an expert document analyst. Analyze the provided PDF text and extract:
-1. A comprehensive executive summary (2-3 paragraphs)
-2. Key insights as an array of bullet points
-3. Enhanced metadata including title, authors, and publication date if available
+          content: `Você é um analista especialista em documentos. Analise o texto do PDF fornecido e extraia:
+1. Um resumo executivo abrangente e detalhado (4-6 parágrafos) que inclua:
+   - Visão geral do documento e seu propósito
+   - Descrição detalhada dos principais capítulos e seções
+   - Temas centrais e metodologias abordadas
+   - Principais conclusões e recomendações
+   - Contexto e relevância do trabalho
+2. Insights principais como uma lista de pontos-chave
+3. Metadados aprimorados incluindo título, autores e data de publicação se disponíveis
 
-Respond with JSON in this exact format:
+IMPORTANTE: Responda SEMPRE em português brasileiro, independentemente do idioma do documento original.
+
+Responda com JSON neste formato exato:
 {
-  "summary": "comprehensive summary text",
-  "insights": ["insight 1", "insight 2", "insight 3", ...],
+  "summary": "resumo executivo detalhado em português",
+  "insights": ["insight 1 em português", "insight 2 em português", "insight 3 em português", ...],
   "metadata": {
-    "title": "enhanced or extracted title",
-    "authors": "extracted or enhanced authors",
-    "publishedAt": "publication date if found"
+    "title": "título extraído ou aprimorado",
+    "authors": "autores extraídos ou aprimorados",
+    "publishedAt": "data de publicação se encontrada"
   }
 }`
         },
         {
           role: "user",
-          content: `Please analyze this document text and provide the analysis in JSON format:
+          content: `Por favor, analise este texto do documento e forneça uma análise detalhada em JSON. 
 
-${existingMetadata ? `Existing metadata:
-Title: ${existingMetadata.title || 'Unknown'}
-Authors: ${existingMetadata.authors || 'Unknown'}
-Published: ${existingMetadata.publishedAt ? existingMetadata.publishedAt.toISOString() : 'Unknown'}
+INSTRUÇÕES ESPECÍFICAS:
+- Crie um resumo executivo extenso e detalhado (4-6 parágrafos)
+- Inclua análise de cada capítulo/seção principal encontrada no documento
+- Identifique metodologias, teorias e conceitos centrais
+- Destaque conclusões, recomendações e implicações práticas
+- Forneça insights estratégicos e pontos-chave de aprendizado
+- SEMPRE responda em português brasileiro, mesmo que o documento original esteja em outro idioma
 
-` : ''}Document text:
-${text.substring(0, 10000)}${text.length > 10000 ? '...' : ''}`
+${existingMetadata ? `Metadados existentes:
+Título: ${existingMetadata.title || 'Desconhecido'}
+Autores: ${existingMetadata.authors || 'Desconhecido'}
+Publicado em: ${existingMetadata.publishedAt ? existingMetadata.publishedAt.toISOString() : 'Desconhecido'}
+
+` : ''}Texto do documento:
+${text.substring(0, 15000)}${text.length > 15000 ? '...' : ''}`
         }
       ],
       response_format: { type: "json_object" },
-      max_tokens: 2000,
+      max_tokens: 3500,
     });
 
     const result = JSON.parse(response.choices[0].message.content || '{}');
