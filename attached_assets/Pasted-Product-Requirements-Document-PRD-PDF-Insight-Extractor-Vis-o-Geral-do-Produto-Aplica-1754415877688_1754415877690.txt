@@ -1,0 +1,151 @@
+Product Requirements Document (PRD)
+
+
+PDF Insight Extractor
+
+
+Visão Geral do Produto
+
+Aplicativo web que permite aos usuários autenticados realizarem o upload de arquivos PDF para extração automatizada de metadados (título, autores, data de publicação) e insights relevantes, com armazenamento seguro e histórico de extrações. Utiliza OpenAI API 4.1 mini para análise de conteúdo.
+
+
+Objetivos
+
+* Fornecer extração rápida e precisa de informações de arquivos PDF.
+* Garantir um ambiente seguro e autenticado para os usuários.
+* Oferecer histórico acessível e download de PDFs e seus dados extraídos.
+
+---
+
+Público-Alvo
+
+* Estudantes e pesquisadores.
+* Profissionais de áreas que lidam com leitura crítica de artigos e relatórios técnicos.
+
+
+ Workflow do Usuário
+
+1. Autenticação
+
+* O usuário acessa a tela de login.
+* Insere *e-mail/usuário* e *senha* (opção de gmail e github)
+* Backend valida as credenciais no banco de dados.
+* Em caso de sucesso, o usuário é redirecionado para o ambiente autenticado.
+
+2. Upload do PDF
+
+* Na tela principal, o usuário pode *selecionar e enviar um PDF para upload.
+* O PDF é salvo na product store do sistema.
+* O backend processa o arquivo para extrair os metadados:
+
+  * Título
+  * Autores
+  * Data de publicação
+
+3. Extração de Insights:
+
+* Após upload bem-sucedido, o botão “Run” é exibido.
+* Ao clicar, o backend envia uma requisição para a *API da OpenAI*, com a API Key segura nos secrets.
+* A resposta da OpenAI inclui:
+
+  * Metadados
+  *Resumo criterioso
+  * Insights relevantes do conteúdo
+
+4. Exibição dos Resultados
+
+* Após o processamento, o usuário é redirecionado para uma nova tela.
+* Exibição dos dados principais + resumo + insights de forma clara e legível.
+
+5. Histórico e Sidebar
+
+* Sidebar recolhível mostra o *histórico de uploads* do usuário.
+* Cada item apresenta:
+
+  * Nome do arquivo PDF
+  * Link para download
+  * Data de upload
+  * Título e autores extraídos
+  * Botão para reabrir visualização dos dados extraídos
+
+
+Wireframes 
+
+ Tela de Login
+
+* Campos: Email, Senha
+* Botão: Login (não é necessária a autenticação).
+* Botão: Recuperar senha
+
+Tela Principal (após login)
+
+* Botão de upload de PDF
+* Sidebar com histórico (recolhível)
+* Área de preview do upload
+* Botão "Run" para iniciar extração
+
+ Tela de Resultado
+
+* Metadados principais 
+* Resumo criterioso
+* Insights (bullet points)
+
+
+Requisitos Técnicos
+
+ Frontend
+
+* *Framework*: React (com Vite)
+* *Bibliotecas*:
+
+  * Axios (requisições HTTP)
+  * Tailwind CSS (estilização)
+  * React Router (navegação)
+  * Zustand ou Redux (gerenciamento de estado)
+
+ Backend
+
+* *Linguagem*: Node.js
+* *Framework*: Express.js
+* *Segurança*: JWT para autenticação
+* *PDF Parsing*: pdf-parse ou pdfjs
+* *Integração OpenAI*: via SDK ou fetch com API Key armazenada em .env
+
+ Banco de Dados
+
+* *Built-in Database* (PostgreSQL)
+* Tabelas:
+
+  * users: id, email, senha (hash), criado\_em
+  * documents: id, user\_id, título, autores, data\_publicação, caminho\_arquivo, resumo, insights, criado\_em
+
+### Armazenamento de Arquivos
+
+* *Product Store* para arquivos PDF
+* Link seguro para download (tokenizado ou autenticado)
+
+
+Segurança
+
+* Autenticação via JWT
+* Armazenamento de senhas com bcrypt
+* Validação de tipo/limite de arquivo no upload
+* API Key OpenAI mantida em secrets e *nunca exposta no frontend*
+
+
+APIs Externas
+
+OpenAI GPT-4.1-mini API para análise semântica:
+
+  * Entrada: Texto extraído do PDF
+  * Saída: JSON dos metadados, resumo + insights
+
+
+Métricas de Sucesso
+
+* Tempo médio de extração por PDF < 10s
+* Taxa de erro no parsing < 5%
+* Engajamento: número médio de uploads por usuário/mês
+* Retenção: % de usuários que retornam no mês seguinte
+
+
