@@ -10,11 +10,12 @@ import {
   Clock, 
   Download, 
   Plus, 
-  FolderOutput, 
-  Share,
+  FileDown,
   Lightbulb,
   Users
 } from 'lucide-react';
+import jsPDF from 'jspdf';
+import html2canvas from 'html2canvas';
 import { Document } from '@shared/schema';
 import { api } from '@/lib/api';
 import { useLocation } from 'wouter';
@@ -50,6 +51,111 @@ export default function ResultsPage({ params }: ResultsPageProps) {
 
   const handleProcessNew = () => {
     setLocation('/dashboard');
+  };
+
+  const handleExportPDF = async () => {
+    if (!document) return;
+    
+    try {
+      // Create PDF content structure
+      const pdf = new jsPDF('p', 'mm', 'a4');
+      const pageWidth = pdf.internal.pageSize.getWidth();
+      const pageHeight = pdf.internal.pageSize.getHeight();
+      const margin = 20;
+      let yPosition = margin;
+      
+      // Set fonts
+      pdf.setFont('helvetica', 'bold');
+      pdf.setFontSize(20);
+      
+      // Title
+      const title = document.title || 'Documento sem título';
+      const titleLines = pdf.splitTextToSize(title, pageWidth - 2 * margin);
+      pdf.text(titleLines, margin, yPosition);
+      yPosition += titleLines.length * 7 + 10;
+      
+      // Document info
+      pdf.setFont('helvetica', 'normal');
+      pdf.setFontSize(12);
+      
+      if (document.authors) {
+        pdf.text(`Autores: ${document.authors}`, margin, yPosition);
+        yPosition += 8;
+      }
+      
+      if (document.publishedAt) {
+        pdf.text(`Data de Publicação: ${format(new Date(document.publishedAt), 'dd/MM/yyyy')}`, margin, yPosition);
+        yPosition += 8;
+      }
+      
+      pdf.text(`Processado em: ${format(new Date(document.createdAt), 'dd/MM/yyyy HH:mm')}`, margin, yPosition);
+      yPosition += 15;
+      
+      // Executive Summary
+      if (document.summary) {
+        pdf.setFont('helvetica', 'bold');
+        pdf.setFontSize(16);
+        pdf.text('Resumo Executivo', margin, yPosition);
+        yPosition += 10;
+        
+        pdf.setFont('helvetica', 'normal');
+        pdf.setFontSize(11);
+        const summaryLines = pdf.splitTextToSize(document.summary, pageWidth - 2 * margin);
+        
+        // Check if we need a new page
+        if (yPosition + summaryLines.length * 5 > pageHeight - margin) {
+          pdf.addPage();
+          yPosition = margin;
+        }
+        
+        pdf.text(summaryLines, margin, yPosition);
+        yPosition += summaryLines.length * 5 + 15;
+      }
+      
+      // Key Insights
+      if (document.insights && Array.isArray(document.insights) && document.insights.length > 0) {
+        // Check if we need a new page
+        if (yPosition + 30 > pageHeight - margin) {
+          pdf.addPage();
+          yPosition = margin;
+        }
+        
+        pdf.setFont('helvetica', 'bold');
+        pdf.setFontSize(16);
+        pdf.text('Principais Insights', margin, yPosition);
+        yPosition += 10;
+        
+        pdf.setFont('helvetica', 'normal');
+        pdf.setFontSize(11);
+        
+        document.insights.forEach((insight, index) => {
+          const insightText = `• ${insight}`;
+          const insightLines = pdf.splitTextToSize(insightText, pageWidth - 2 * margin - 5);
+          
+          // Check if we need a new page
+          if (yPosition + insightLines.length * 5 > pageHeight - margin) {
+            pdf.addPage();
+            yPosition = margin;
+          }
+          
+          pdf.text(insightLines, margin, yPosition);
+          yPosition += insightLines.length * 5 + 5;
+        });
+      }
+      
+      // Footer with generation info
+      pdf.setFont('helvetica', 'italic');
+      pdf.setFontSize(8);
+      pdf.text('Gerado pelo PDF Insight Extractor', margin, pageHeight - 10);
+      
+      // Save the PDF
+      const fileName = `${document.title || 'documento'}_analise.pdf`.replace(/[^a-zA-Z0-9_-]/g, '_');
+      pdf.save(fileName);
+      
+    } catch (error) {
+      console.error('Erro ao gerar PDF:', error);
+      alert('Erro ao gerar o arquivo PDF. Tente novamente.');
+    }
   };
 
   if (isLoading) {
@@ -223,23 +329,12 @@ export default function ResultsPage({ params }: ResultsPageProps) {
           </Button>
           <Button
             variant="outline"
-            onClick={() => {
-              // Export functionality would be implemented here
-            }}
-            data-testid="button-export"
+            onClick={handleExportPDF}
+            data-testid="button-export-pdf"
+            className="bg-green-50 hover:bg-green-100 text-green-700 border-green-200"
           >
-            <FolderOutput className="h-4 w-4 mr-2" />
-            Export Results
-          </Button>
-          <Button
-            variant="outline"
-            onClick={() => {
-              // Share functionality would be implemented here  
-            }}
-            data-testid="button-share"
-          >
-            <Share className="h-4 w-4 mr-2" />
-            Share Results
+            <FileDown className="h-4 w-4 mr-2" />
+            Exportar PDF
           </Button>
         </div>
       </main>
