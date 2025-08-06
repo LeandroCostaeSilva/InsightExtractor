@@ -7,6 +7,8 @@ import { useAuth } from "@/hooks/use-auth";
 import LoginPage from "@/pages/login";
 import DashboardPage from "@/pages/dashboard";
 import ResultsPage from "@/pages/results";
+import ForgotPassword from "@/pages/forgot-password";
+import ResetPassword from "@/pages/reset-password";
 import NotFound from "@/pages/not-found";
 
 function ProtectedRoute({ children }: { children: React.ReactNode }) {
@@ -48,6 +50,14 @@ function Router() {
     <Switch>
       <Route path="/login">
         {isAuthenticated ? <Redirect to="/dashboard" /> : <LoginPage />}
+      </Route>
+      
+      <Route path="/forgot-password">
+        {isAuthenticated ? <Redirect to="/dashboard" /> : <ForgotPassword />}
+      </Route>
+      
+      <Route path="/reset-password">
+        {isAuthenticated ? <Redirect to="/dashboard" /> : <ResetPassword />}
       </Route>
       
       <Route path="/dashboard">

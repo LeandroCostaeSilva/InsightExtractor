@@ -2,7 +2,8 @@ import type { Express } from "express";
 import { createServer, type Server } from "http";
 import { storage } from "./storage";
 import { authenticateToken, hashPassword, comparePassword, generateToken, type AuthRequest } from "./auth";
-import { registerSchema, loginSchema } from "@shared/schema";
+import { registerSchema, loginSchema, forgotPasswordSchema, resetPasswordSchema } from "@shared/schema";
+import { emailService } from "./emailService";
 import { extractPDFContent, ensureUploadsDirectory, generateFileName } from "./pdfProcessor";
 import { analyzeDocument } from "./openaiService";
 import { ObjectStorageService, ObjectNotFoundError } from "./objectStorage";
@@ -85,6 +86,74 @@ export async function registerRoutes(app: Express): Promise<Server> {
     } catch (error: any) {
       console.error("Login error:", error);
       res.status(400).json({ message: error.message || "Login failed" });
+    }
+  });
+
+  // Forgot password route
+  app.post("/api/forgot-password", async (req, res) => {
+    try {
+      const { email } = forgotPasswordSchema.parse(req.body);
+      
+      // Check if user exists
+      const user = await storage.getUserByEmail(email);
+      if (!user) {
+        // Return success even if user doesn't exist (security best practice)
+        return res.json({ 
+          message: "Se o email estiver cadastrado, você receberá instruções para redefinir sua senha." 
+        });
+      }
+
+      // Generate reset token
+      const token = emailService.generateResetToken();
+      const expiresAt = emailService.getTokenExpiration();
+
+      // Store token in database
+      await storage.createPasswordResetToken({
+        userId: user.id,
+        token,
+        expiresAt,
+      });
+
+      // Send email
+      await emailService.sendPasswordResetEmail(email, token);
+
+      res.json({ 
+        message: "Se o email estiver cadastrado, você receberá instruções para redefinir sua senha." 
+      });
+    } catch (error) {
+      console.error("Forgot password error:", error);
+      res.status(500).json({ message: "Erro interno do servidor" });
+    }
+  });
+
+  // Reset password route
+  app.post("/api/reset-password", async (req, res) => {
+    try {
+      const { token, newPassword } = resetPasswordSchema.parse(req.body);
+      
+      // Get token from database
+      const resetToken = await storage.getPasswordResetToken(token);
+      if (!resetToken) {
+        return res.status(400).json({ message: "Token inválido ou expirado" });
+      }
+
+      // Check if token is expired
+      if (new Date() > resetToken.expiresAt) {
+        await storage.deletePasswordResetToken(token);
+        return res.status(400).json({ message: "Token expirado" });
+      }
+
+      // Hash new password and update user
+      const hashedPassword = await hashPassword(newPassword);
+      await storage.updateUser(resetToken.userId, { password: hashedPassword });
+
+      // Delete used token
+      await storage.deletePasswordResetToken(token);
+
+      res.json({ message: "Senha redefinida com sucesso" });
+    } catch (error) {
+      console.error("Reset password error:", error);
+      res.status(500).json({ message: "Erro interno do servidor" });
     }
   });
 

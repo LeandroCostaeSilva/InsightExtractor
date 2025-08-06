@@ -35,6 +35,14 @@ export const extractions = pgTable("extractions", {
   createdAt: timestamp("created_at").defaultNow().notNull(),
 });
 
+export const passwordResetTokens = pgTable("password_reset_tokens", {
+  id: varchar("id").primaryKey().default(sql`gen_random_uuid()`),
+  userId: varchar("user_id").notNull().references(() => users.id, { onDelete: "cascade" }),
+  token: text("token").notNull().unique(),
+  expiresAt: timestamp("expires_at").notNull(),
+  createdAt: timestamp("created_at").defaultNow().notNull(),
+});
+
 export const usersRelations = relations(users, ({ many }) => ({
   documents: many(documents),
 }));
@@ -74,13 +82,29 @@ export const loginSchema = z.object({
   password: z.string().min(6),
 });
 
+export const forgotPasswordSchema = z.object({
+  email: z.string().email(),
+});
+
+export const resetPasswordSchema = z.object({
+  token: z.string(),
+  newPassword: z.string().min(6),
+});
+
+export const insertPasswordResetTokenSchema = createInsertSchema(passwordResetTokens).omit({
+  id: true,
+  createdAt: true,
+});
+
 export const registerSchema = insertUserSchema.extend({
   password: z.string().min(6),
 });
 
-export type InsertUser = z.infer<typeof insertUserSchema>;
 export type User = typeof users.$inferSelect;
-export type InsertDocument = z.infer<typeof insertDocumentSchema>;
+export type InsertUser = z.infer<typeof insertUserSchema>;
 export type Document = typeof documents.$inferSelect;
-export type InsertExtraction = z.infer<typeof insertExtractionSchema>;
+export type InsertDocument = z.infer<typeof insertDocumentSchema>;
 export type Extraction = typeof extractions.$inferSelect;
+export type InsertExtraction = z.infer<typeof insertExtractionSchema>;
+export type PasswordResetToken = typeof passwordResetTokens.$inferSelect;
+export type InsertPasswordResetToken = z.infer<typeof insertPasswordResetTokenSchema>;

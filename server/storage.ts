@@ -2,12 +2,15 @@ import {
   users, 
   documents, 
   extractions,
+  passwordResetTokens,
   type User, 
   type InsertUser,
   type Document,
   type InsertDocument,
   type Extraction,
-  type InsertExtraction
+  type InsertExtraction,
+  type PasswordResetToken,
+  type InsertPasswordResetToken
 } from "@shared/schema";
 import { db } from "./db";
 import { eq, desc } from "drizzle-orm";
@@ -30,6 +33,12 @@ export interface IStorage {
   // Extraction methods
   createExtraction(extraction: InsertExtraction): Promise<Extraction>;
   getExtractionsByDocumentId(documentId: string): Promise<Extraction[]>;
+  
+  // Password reset methods
+  createPasswordResetToken(token: InsertPasswordResetToken): Promise<PasswordResetToken>;
+  getPasswordResetToken(token: string): Promise<PasswordResetToken | undefined>;
+  deletePasswordResetToken(token: string): Promise<void>;
+  deleteExpiredPasswordResetTokens(): Promise<void>;
 }
 
 export class DatabaseStorage implements IStorage {
@@ -114,6 +123,25 @@ export class DatabaseStorage implements IStorage {
       .from(extractions)
       .where(eq(extractions.documentId, documentId))
       .orderBy(desc(extractions.createdAt));
+  }
+
+  // Password reset methods
+  async createPasswordResetToken(token: InsertPasswordResetToken): Promise<PasswordResetToken> {
+    const [resetToken] = await db.insert(passwordResetTokens).values(token).returning();
+    return resetToken;
+  }
+
+  async getPasswordResetToken(token: string): Promise<PasswordResetToken | undefined> {
+    const [resetToken] = await db.select().from(passwordResetTokens).where(eq(passwordResetTokens.token, token));
+    return resetToken || undefined;
+  }
+
+  async deletePasswordResetToken(token: string): Promise<void> {
+    await db.delete(passwordResetTokens).where(eq(passwordResetTokens.token, token));
+  }
+
+  async deleteExpiredPasswordResetTokens(): Promise<void> {
+    await db.delete(passwordResetTokens).where(eq(passwordResetTokens.expiresAt, new Date()));
   }
 }
 

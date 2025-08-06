@@ -1,5 +1,5 @@
 import { useState, useEffect } from 'react';
-import { useLocation } from 'wouter';
+import { useLocation, Link } from 'wouter';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
@@ -99,7 +99,7 @@ export default function Login() {
                 )}
               </Button>
               
-              <div className="text-center">
+              <div className="text-center space-y-2">
                 <button
                   type="button"
                   onClick={() => setIsRegistering(!isRegistering)}
@@ -111,6 +111,20 @@ export default function Login() {
                     : "Don't have an account? Create one"
                   }
                 </button>
+                
+                {!isRegistering && (
+                  <div>
+                    <Link href="/forgot-password">
+                      <button
+                        type="button"
+                        className="text-sm text-gray-500 hover:text-gray-700 transition-colors"
+                        data-testid="link-forgot-password"
+                      >
+                        Esqueci minha senha
+                      </button>
+                    </Link>
+                  </div>
+                )}
               </div>
               
 
