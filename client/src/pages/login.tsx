@@ -120,7 +120,7 @@ export default function Login() {
                         className="text-sm text-gray-500 hover:text-gray-700 transition-colors"
                         data-testid="link-forgot-password"
                       >
-                        Esqueci minha senha
+                        Forgot password
                       </button>
                     </Link>
                   </div>
