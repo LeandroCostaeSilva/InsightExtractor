@@ -38,21 +38,21 @@ export default function Login() {
   };
 
   return (
-    <div className="min-h-screen flex items-center justify-center bg-gradient-to-br from-primary-50 to-white px-4">
+    <div className="min-h-screen flex items-center justify-center bg-gradient-to-br from-slate-900 via-purple-900 to-slate-900 px-4">
       <div className="max-w-md w-full space-y-8">
         <div className="text-center">
-          <div className="mx-auto h-16 w-16 bg-primary-500 rounded-full flex items-center justify-center mb-6">
+          <div className="mx-auto h-16 w-16 bg-gradient-to-r from-blue-500 to-purple-600 rounded-full flex items-center justify-center mb-6 shadow-xl">
             <FileText className="h-8 w-8 text-white" />
           </div>
-          <h1 className="text-3xl font-bold text-gray-900 mb-2">PDF Insight Extractor</h1>
-          <p className="text-gray-600">Extract insights from your PDF documents with AI</p>
+          <h1 className="text-3xl font-bold text-white mb-2">PDF Insight Extractor</h1>
+          <p className="text-slate-300">Extract insights from your PDF documents with AI</p>
         </div>
         
-        <Card className="shadow-lg">
+        <Card className="shadow-2xl bg-slate-800/90 backdrop-blur-sm border-slate-700">
           <CardContent className="p-8">
             <form onSubmit={handleSubmit} className="space-y-6" data-testid="form-auth">
               <div>
-                <Label htmlFor="email" className="block text-sm font-medium text-gray-700 mb-2">
+                <Label htmlFor="email" className="block text-sm font-medium text-slate-200 mb-2">
                   Email Address
                 </Label>
                 <Input
@@ -62,13 +62,13 @@ export default function Login() {
                   onChange={(e) => setEmail(e.target.value)}
                   required
                   placeholder="your@email.com"
-                  className="w-full"
+                  className="w-full bg-slate-700/50 border-slate-600 text-white placeholder:text-slate-400 focus:border-blue-500"
                   data-testid="input-email"
                 />
               </div>
               
               <div>
-                <Label htmlFor="password" className="block text-sm font-medium text-gray-700 mb-2">
+                <Label htmlFor="password" className="block text-sm font-medium text-slate-200 mb-2">
                   Password
                 </Label>
                 <Input
@@ -78,7 +78,7 @@ export default function Login() {
                   onChange={(e) => setPassword(e.target.value)}
                   required
                   placeholder="••••••••"
-                  className="w-full"
+                  className="w-full bg-slate-700/50 border-slate-600 text-white placeholder:text-slate-400 focus:border-blue-500"
                   data-testid="input-password"
                 />
               </div>
@@ -86,7 +86,7 @@ export default function Login() {
               <Button
                 type="submit"
                 disabled={isLoading}
-                className="w-full bg-primary-500 hover:bg-primary-600"
+                className="w-full bg-gradient-to-r from-blue-600 to-purple-600 hover:from-blue-700 hover:to-purple-700 text-white font-semibold shadow-lg"
                 data-testid="button-submit"
               >
                 {isLoading ? (
@@ -103,7 +103,7 @@ export default function Login() {
                 <button
                   type="button"
                   onClick={() => setIsRegistering(!isRegistering)}
-                  className="text-sm text-primary-500 hover:text-primary-600 transition-colors"
+                  className="text-sm text-blue-400 hover:text-blue-300 transition-colors"
                   data-testid="button-toggle-mode"
                 >
                   {isRegistering 
@@ -117,7 +117,7 @@ export default function Login() {
                     <Link href="/forgot-password">
                       <button
                         type="button"
-                        className="text-sm text-gray-500 hover:text-gray-700 transition-colors"
+                        className="text-sm text-slate-400 hover:text-slate-300 transition-colors"
                         data-testid="link-forgot-password"
                       >
                         Forgot password
