@@ -6,7 +6,7 @@ import { registerSchema, loginSchema } from "@shared/schema";
 import { extractPDFContent, ensureUploadsDirectory, generateFileName } from "./pdfProcessor";
 import { analyzeDocument } from "./openaiService";
 import { ObjectStorageService, ObjectNotFoundError } from "./objectStorage";
-import { passport } from "./oauth";
+// OAuth import temporarily removed for clean setup
 import multer from "multer";
 import path from "path";
 import fs from "fs";
@@ -30,82 +30,16 @@ const upload = multer({
 
 export async function registerRoutes(app: Express): Promise<Server> {
   
-  // Configure session middleware for OAuth
-  app.use(session({
-    secret: process.env.SESSION_SECRET || 'your-session-secret',
-    resave: false,
-    saveUninitialized: false,
-    cookie: { secure: false } // Set to true if using HTTPS
-  }));
+  // Session and OAuth middleware temporarily removed for clean setup
   
-  // Initialize Passport
-  app.use(passport.initialize());
-  app.use(passport.session());
+  // OAuth routes disabled during reconfiguration
+  app.get('/api/auth/google', (req, res) => {
+    res.status(501).json({ error: 'Google OAuth temporarily disabled for reconfiguration' });
+  });
   
-  // OAuth routes (only if credentials are configured)
-  if (process.env.GOOGLE_CLIENT_ID && process.env.GOOGLE_CLIENT_SECRET) {
-    app.get('/api/auth/google', (req, res, next) => {
-      console.log('Initiating Google OAuth authentication...');
-      passport.authenticate('google', { 
-        scope: ['profile', 'email'],
-        accessType: 'offline',
-        prompt: 'consent'
-      })(req, res, next);
-    });
-    
-    app.get('/api/auth/google/callback', 
-      (req, res, next) => {
-        console.log('Google OAuth callback received');
-        passport.authenticate('google', { 
-          failureRedirect: '/login?error=oauth_failed',
-          successRedirect: false
-        })(req, res, next);
-      },
-      (req, res) => {
-        try {
-          // Successful authentication, generate JWT and redirect
-          const user = req.user as any;
-          if (!user) {
-            console.error('No user found after OAuth authentication');
-            return res.redirect('/login?error=no_user');
-          }
-          
-          const token = generateToken(user.id, user.email);
-          console.log('OAuth authentication successful for user:', user.email);
-          
-          // Redirect to frontend with token
-          res.redirect(`/login?token=${token}&success=true`);
-        } catch (error) {
-          console.error('Error in OAuth callback:', error);
-          res.redirect('/login?error=callback_error');
-        }
-      }
-    );
-  } else {
-    app.get('/api/auth/google', (req, res) => {
-      res.status(501).json({ error: 'Google OAuth not configured. Please set GOOGLE_CLIENT_ID and GOOGLE_CLIENT_SECRET environment variables.' });
-    });
-  }
-  
-  if (process.env.GITHUB_CLIENT_ID && process.env.GITHUB_CLIENT_SECRET) {
-    app.get('/api/auth/github', passport.authenticate('github', { scope: ['user:email'] }));
-    
-    app.get('/api/auth/github/callback',
-      passport.authenticate('github', { failureRedirect: '/login' }),
-      (req, res) => {
-        // Successful authentication, generate JWT and redirect
-        const user = req.user as any;
-        const token = generateToken(user.id, user.email);
-        
-        // Redirect to frontend with token
-        res.redirect(`/login?token=${token}&success=true`);
-      }
-    );
-  } else {
-    app.get('/api/auth/github', (req, res) => {
-      res.status(501).json({ error: 'GitHub OAuth not configured. Please set GITHUB_CLIENT_ID and GITHUB_CLIENT_SECRET environment variables.' });
-    });
-  }
+  app.get('/api/auth/github', (req, res) => {
+    res.status(501).json({ error: 'GitHub OAuth temporarily disabled for reconfiguration' });
+  });
   
   // Auth routes
   app.post("/api/auth/register", async (req, res) => {
