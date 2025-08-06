@@ -6,12 +6,9 @@ import { registerSchema, loginSchema } from "@shared/schema";
 import { extractPDFContent, ensureUploadsDirectory, generateFileName } from "./pdfProcessor";
 import { analyzeDocument } from "./openaiService";
 import { ObjectStorageService, ObjectNotFoundError } from "./objectStorage";
-import { passport } from "./oauth";
 import multer from "multer";
 import path from "path";
 import fs from "fs";
-import session from "express-session";
-import jwt from "jsonwebtoken";
 
 // Configure multer for file uploads
 const uploadsDir = ensureUploadsDirectory();
@@ -30,39 +27,6 @@ const upload = multer({
 });
 
 export async function registerRoutes(app: Express): Promise<Server> {
-  
-  // Configure session middleware for OAuth
-  app.use(session({
-    secret: process.env.SESSION_SECRET || 'your-session-secret',
-    resave: false,
-    saveUninitialized: false,
-    cookie: { secure: false } // Set to true if using HTTPS
-  }));
-  
-  // Initialize Passport
-  app.use(passport.initialize());
-  app.use(passport.session());
-  
-  // Google OAuth routes
-  app.get('/api/auth/google', 
-    passport.authenticate('google', { scope: ['profile', 'email'] })
-  );
-
-  app.get('/api/auth/google/callback',
-    passport.authenticate('google', { failureRedirect: '/login' }),
-    async (req, res) => {
-      try {
-        const user = req.user as any;
-        const token = generateToken(user.id, user.email);
-        
-        // Redirect to frontend with token
-        res.redirect(`/login?token=${token}&success=true`);
-      } catch (error) {
-        console.error('OAuth callback error:', error);
-        res.redirect('/login?error=oauth_failed');
-      }
-    }
-  );
   
   // Auth routes
   app.post("/api/auth/register", async (req, res) => {

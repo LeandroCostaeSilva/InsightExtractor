@@ -49,15 +49,13 @@ PDF Insight Extractor is a complete full-stack web application that allows authe
 - Enhanced API with dedicated download endpoint for original PDF files
 - Automatic cleanup of temporary files after successful object storage upload
 
-✅ **OAuth Authentication System Status**
-- Google OAuth completely implemented using passport-google-oauth20
-- OAuth credentials configured: GOOGLE_CLIENT_ID and GOOGLE_CLIENT_SECRET
-- Functional OAuth routes: /api/auth/google and /api/auth/google/callback
-- Database schema supports googleId field for OAuth user linking
-- System supports dual authentication: email/password AND Google OAuth
-- Current issue: Google Cloud Console needs domain configuration:
-  - Required domains: workspace.leandrovcs.replit.app and localhost:5000
-  - Status: Awaiting Google Cloud Console configuration by user
+✅ **Authentication System Status**
+- Simple email/password authentication system implemented
+- JWT-based token authentication with 7-day expiration
+- Secure password hashing using bcrypt (12 rounds)
+- Clean login/registration interface without OAuth complexity
+- OAuth system removed per user request to keep authentication simple
+- Database schema maintains googleId/githubId fields for potential future use
 
 ## User Preferences
 
