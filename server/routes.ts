@@ -6,11 +6,12 @@ import { registerSchema, loginSchema } from "@shared/schema";
 import { extractPDFContent, ensureUploadsDirectory, generateFileName } from "./pdfProcessor";
 import { analyzeDocument } from "./openaiService";
 import { ObjectStorageService, ObjectNotFoundError } from "./objectStorage";
-// OAuth import temporarily removed for clean setup
+import { passport } from "./oauth";
 import multer from "multer";
 import path from "path";
 import fs from "fs";
 import session from "express-session";
+import jwt from "jsonwebtoken";
 
 // Configure multer for file uploads
 const uploadsDir = ensureUploadsDirectory();
@@ -30,16 +31,38 @@ const upload = multer({
 
 export async function registerRoutes(app: Express): Promise<Server> {
   
-  // Session and OAuth middleware temporarily removed for clean setup
+  // Configure session middleware for OAuth
+  app.use(session({
+    secret: process.env.SESSION_SECRET || 'your-session-secret',
+    resave: false,
+    saveUninitialized: false,
+    cookie: { secure: false } // Set to true if using HTTPS
+  }));
   
-  // OAuth routes disabled during reconfiguration
-  app.get('/api/auth/google', (req, res) => {
-    res.status(501).json({ error: 'Google OAuth temporarily disabled for reconfiguration' });
-  });
+  // Initialize Passport
+  app.use(passport.initialize());
+  app.use(passport.session());
   
-  app.get('/api/auth/github', (req, res) => {
-    res.status(501).json({ error: 'GitHub OAuth temporarily disabled for reconfiguration' });
-  });
+  // Google OAuth routes
+  app.get('/api/auth/google', 
+    passport.authenticate('google', { scope: ['profile', 'email'] })
+  );
+
+  app.get('/api/auth/google/callback',
+    passport.authenticate('google', { failureRedirect: '/login' }),
+    async (req, res) => {
+      try {
+        const user = req.user as any;
+        const token = generateToken(user.id, user.email);
+        
+        // Redirect to frontend with token
+        res.redirect(`/login?token=${token}&success=true`);
+      } catch (error) {
+        console.error('OAuth callback error:', error);
+        res.redirect('/login?error=oauth_failed');
+      }
+    }
+  );
   
   // Auth routes
   app.post("/api/auth/register", async (req, res) => {
@@ -102,12 +125,12 @@ export async function registerRoutes(app: Express): Promise<Server> {
   });
 
   // Protected routes
-  app.get("/api/auth/me", authenticateToken, async (req: AuthRequest, res) => {
+  app.get("/api/auth/me", authenticateToken, (req: any, res) => {
     res.json({ user: req.user });
   });
 
   // Document routes
-  app.get("/api/documents", authenticateToken, async (req: AuthRequest, res) => {
+  app.get("/api/documents", authenticateToken, async (req: any, res) => {
     try {
       const documents = await storage.getDocumentsByUserId(req.user!.id);
       res.json(documents);
@@ -117,7 +140,7 @@ export async function registerRoutes(app: Express): Promise<Server> {
     }
   });
 
-  app.get("/api/documents/:id", authenticateToken, async (req: AuthRequest, res) => {
+  app.get("/api/documents/:id", authenticateToken, async (req: any, res) => {
     try {
       const document = await storage.getDocument(req.params.id);
       
@@ -136,7 +159,7 @@ export async function registerRoutes(app: Express): Promise<Server> {
     }
   });
 
-  app.post("/api/documents/upload", authenticateToken, upload.single('pdf'), async (req: AuthRequest, res) => {
+  app.post("/api/documents/upload", authenticateToken, upload.single('pdf'), async (req: any, res) => {
     try {
       if (!req.file) {
         return res.status(400).json({ message: "No PDF file uploaded" });
@@ -207,7 +230,7 @@ export async function registerRoutes(app: Express): Promise<Server> {
     }
   });
 
-  app.post("/api/documents/:id/analyze", authenticateToken, async (req: AuthRequest, res) => {
+  app.post("/api/documents/:id/analyze", authenticateToken, async (req: any, res) => {
     try {
       const document = await storage.getDocument(req.params.id);
       
@@ -262,7 +285,7 @@ export async function registerRoutes(app: Express): Promise<Server> {
   });
 
   // Download original PDF document
-  app.get("/api/documents/:id/download", authenticateToken, async (req: AuthRequest, res) => {
+  app.get("/api/documents/:id/download", authenticateToken, async (req: any, res) => {
     try {
       const document = await storage.getDocument(req.params.id);
       
@@ -308,33 +331,7 @@ export async function registerRoutes(app: Express): Promise<Server> {
     }
   });
 
-  app.get("/api/documents/:id/download", authenticateToken, async (req: AuthRequest, res) => {
-    try {
-      const document = await storage.getDocument(req.params.id);
-      
-      if (!document) {
-        return res.status(404).json({ message: "Document not found" });
-      }
-      
-      if (document.userId !== req.user!.id) {
-        return res.status(403).json({ message: "Access denied" });
-      }
 
-      if (!fs.existsSync(document.filePath)) {
-        return res.status(404).json({ message: "File not found" });
-      }
-
-      const fileName = path.basename(document.filePath);
-      res.setHeader('Content-Disposition', `attachment; filename="${fileName}"`);
-      res.setHeader('Content-Type', 'application/pdf');
-      
-      const fileStream = fs.createReadStream(document.filePath);
-      fileStream.pipe(res);
-    } catch (error) {
-      console.error("Download error:", error);
-      res.status(500).json({ message: "Download failed" });
-    }
-  });
 
   const httpServer = createServer(app);
   return httpServer;
