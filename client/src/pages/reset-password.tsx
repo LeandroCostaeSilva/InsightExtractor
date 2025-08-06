@@ -80,20 +80,20 @@ export default function ResetPassword() {
 
   if (isSuccess) {
     return (
-      <div className="min-h-screen flex items-center justify-center bg-gray-50 dark:bg-gray-900 py-12 px-4 sm:px-6 lg:px-8">
-        <Card className="w-full max-w-md">
+      <div className="min-h-screen flex items-center justify-center bg-gradient-to-br from-slate-900 via-purple-900 to-slate-900 py-12 px-4 sm:px-6 lg:px-8">
+        <Card className="w-full max-w-md bg-slate-800/90 backdrop-blur-sm border-slate-700 shadow-2xl">
           <CardHeader className="text-center">
-            <div className="mx-auto flex h-12 w-12 items-center justify-center rounded-full bg-green-100 dark:bg-green-900/20">
-              <CheckCircle className="h-6 w-6 text-green-600 dark:text-green-400" />
+            <div className="mx-auto flex h-12 w-12 items-center justify-center rounded-full bg-gradient-to-r from-green-500 to-emerald-600 shadow-lg">
+              <CheckCircle className="h-6 w-6 text-white" />
             </div>
-            <CardTitle className="text-2xl">Senha Redefinida</CardTitle>
-            <CardDescription>
+            <CardTitle className="text-2xl text-white">Senha Redefinida</CardTitle>
+            <CardDescription className="text-slate-300">
               Sua senha foi redefinida com sucesso. Agora você pode fazer login com sua nova senha.
             </CardDescription>
           </CardHeader>
           <CardContent>
             <Link href="/login">
-              <Button className="w-full" data-testid="button-go-login">
+              <Button className="w-full bg-gradient-to-r from-blue-600 to-purple-600 hover:from-blue-700 hover:to-purple-700 text-white font-semibold shadow-lg" data-testid="button-go-login">
                 Ir para Login
               </Button>
             </Link>
@@ -108,11 +108,11 @@ export default function ResetPassword() {
   }
 
   return (
-    <div className="min-h-screen flex items-center justify-center bg-gray-50 dark:bg-gray-900 py-12 px-4 sm:px-6 lg:px-8">
-      <Card className="w-full max-w-md">
+    <div className="min-h-screen flex items-center justify-center bg-gradient-to-br from-slate-900 via-purple-900 to-slate-900 py-12 px-4 sm:px-6 lg:px-8">
+      <Card className="w-full max-w-md bg-slate-800/90 backdrop-blur-sm border-slate-700 shadow-2xl">
         <CardHeader className="text-center">
-          <CardTitle className="text-2xl">Nova Senha</CardTitle>
-          <CardDescription>
+          <CardTitle className="text-2xl text-white">Nova Senha</CardTitle>
+          <CardDescription className="text-slate-300">
             Digite sua nova senha para concluir a recuperação
           </CardDescription>
         </CardHeader>
@@ -124,20 +124,21 @@ export default function ResetPassword() {
                 name="newPassword"
                 render={({ field }) => (
                   <FormItem>
-                    <FormLabel>Nova Senha</FormLabel>
+                    <FormLabel className="text-slate-200">Nova Senha</FormLabel>
                     <FormControl>
                       <div className="relative">
                         <Input
                           {...field}
                           type={showPassword ? "text" : "password"}
                           placeholder="Digite sua nova senha"
+                          className="bg-slate-700/50 border-slate-600 text-white placeholder:text-slate-400 focus:border-blue-500"
                           data-testid="input-new-password"
                         />
                         <Button
                           type="button"
                           variant="ghost"
                           size="sm"
-                          className="absolute right-0 top-0 h-full px-3 py-2 hover:bg-transparent"
+                          className="absolute right-0 top-0 h-full px-3 py-2 hover:bg-transparent text-slate-400 hover:text-slate-200"
                           onClick={() => setShowPassword(!showPassword)}
                           data-testid="button-toggle-password"
                         >
@@ -150,7 +151,7 @@ export default function ResetPassword() {
                       </div>
                     </FormControl>
                     <FormMessage />
-                    <div className="text-xs text-gray-500 dark:text-gray-400">
+                    <div className="text-xs text-slate-400">
                       Mínimo de 6 caracteres
                     </div>
                   </FormItem>
@@ -159,7 +160,7 @@ export default function ResetPassword() {
 
               <Button
                 type="submit"
-                className="w-full"
+                className="w-full bg-gradient-to-r from-blue-600 to-purple-600 hover:from-blue-700 hover:to-purple-700 text-white font-semibold shadow-lg"
                 disabled={resetPasswordMutation.isPending}
                 data-testid="button-submit"
               >
@@ -170,7 +171,7 @@ export default function ResetPassword() {
 
           <div className="mt-6 text-center">
             <Link href="/login">
-              <Button variant="ghost" data-testid="link-back-login">
+              <Button variant="ghost" className="text-slate-300 hover:bg-slate-700 hover:text-white" data-testid="link-back-login">
                 <ArrowLeft className="mr-2 h-4 w-4" />
                 Voltar ao Login
               </Button>

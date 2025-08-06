@@ -61,20 +61,20 @@ export default function ForgotPassword() {
 
   if (isEmailSent) {
     return (
-      <div className="min-h-screen flex items-center justify-center bg-gray-50 dark:bg-gray-900 py-12 px-4 sm:px-6 lg:px-8">
-        <Card className="w-full max-w-md">
+      <div className="min-h-screen flex items-center justify-center bg-gradient-to-br from-slate-900 via-purple-900 to-slate-900 py-12 px-4 sm:px-6 lg:px-8">
+        <Card className="w-full max-w-md bg-slate-800/90 backdrop-blur-sm border-slate-700 shadow-2xl">
           <CardHeader className="text-center">
-            <div className="mx-auto flex h-12 w-12 items-center justify-center rounded-full bg-green-100 dark:bg-green-900/20">
-              <Mail className="h-6 w-6 text-green-600 dark:text-green-400" />
+            <div className="mx-auto flex h-12 w-12 items-center justify-center rounded-full bg-gradient-to-r from-green-500 to-emerald-600 shadow-lg">
+              <Mail className="h-6 w-6 text-white" />
             </div>
-            <CardTitle className="text-2xl">Email Enviado</CardTitle>
-            <CardDescription>
+            <CardTitle className="text-2xl text-white">Email Enviado</CardTitle>
+            <CardDescription className="text-slate-300">
               Se o email estiver cadastrado, você receberá instruções para redefinir sua senha em alguns minutos.
             </CardDescription>
           </CardHeader>
           <CardContent>
             <div className="space-y-4">
-              <div className="text-sm text-gray-600 dark:text-gray-400 space-y-2">
+              <div className="text-sm text-slate-300 space-y-2">
                 <p>• Verifique sua caixa de entrada e spam</p>
                 <p>• O link expira em 1 hora</p>
                 <p>• Você pode solicitar um novo link se necessário</p>
@@ -87,13 +87,14 @@ export default function ForgotPassword() {
                     setIsEmailSent(false);
                     form.reset();
                   }}
+                  className="border-slate-600 text-slate-200 hover:bg-slate-700 hover:text-white"
                   data-testid="button-send-again"
                 >
                   Enviar Novamente
                 </Button>
                 
                 <Link href="/login">
-                  <Button variant="ghost" className="w-full" data-testid="link-back-login">
+                  <Button variant="ghost" className="w-full text-slate-300 hover:bg-slate-700 hover:text-white" data-testid="link-back-login">
                     <ArrowLeft className="mr-2 h-4 w-4" />
                     Voltar ao Login
                   </Button>
@@ -107,11 +108,11 @@ export default function ForgotPassword() {
   }
 
   return (
-    <div className="min-h-screen flex items-center justify-center bg-gray-50 dark:bg-gray-900 py-12 px-4 sm:px-6 lg:px-8">
-      <Card className="w-full max-w-md">
+    <div className="min-h-screen flex items-center justify-center bg-gradient-to-br from-slate-900 via-purple-900 to-slate-900 py-12 px-4 sm:px-6 lg:px-8">
+      <Card className="w-full max-w-md bg-slate-800/90 backdrop-blur-sm border-slate-700 shadow-2xl">
         <CardHeader className="text-center">
-          <CardTitle className="text-2xl">Recuperar Senha</CardTitle>
-          <CardDescription>
+          <CardTitle className="text-2xl text-white">Recuperar Senha</CardTitle>
+          <CardDescription className="text-slate-300">
             Digite seu email para receber instruções de recuperação de senha
           </CardDescription>
         </CardHeader>
@@ -123,12 +124,13 @@ export default function ForgotPassword() {
                 name="email"
                 render={({ field }) => (
                   <FormItem>
-                    <FormLabel>Email</FormLabel>
+                    <FormLabel className="text-slate-200">Email</FormLabel>
                     <FormControl>
                       <Input
                         {...field}
                         type="email"
                         placeholder="seu@email.com"
+                        className="bg-slate-700/50 border-slate-600 text-white placeholder:text-slate-400 focus:border-blue-500"
                         data-testid="input-email"
                       />
                     </FormControl>
@@ -139,7 +141,7 @@ export default function ForgotPassword() {
 
               <Button
                 type="submit"
-                className="w-full"
+                className="w-full bg-gradient-to-r from-blue-600 to-purple-600 hover:from-blue-700 hover:to-purple-700 text-white font-semibold shadow-lg"
                 disabled={forgotPasswordMutation.isPending}
                 data-testid="button-submit"
               >
@@ -150,7 +152,7 @@ export default function ForgotPassword() {
 
           <div className="mt-6 text-center">
             <Link href="/login">
-              <Button variant="ghost" data-testid="link-back-login">
+              <Button variant="ghost" className="text-slate-300 hover:bg-slate-700 hover:text-white" data-testid="link-back-login">
                 <ArrowLeft className="mr-2 h-4 w-4" />
                 Voltar ao Login
               </Button>

@@ -57,6 +57,19 @@ PDF Insight Extractor is a complete full-stack web application that allows authe
 - OAuth system removed per user request to keep authentication simple
 - Database schema maintains googleId/githubId fields for potential future use
 
+✅ **Dark Theme UI/UX Redesign (January 6, 2025)**
+- Complete visual overhaul with consistent dark theme across all pages
+- Applied gradient backgrounds: slate-900 to purple-900 for modern appearance
+- Consistent design elements implemented:
+  - Translucent cards with slate-800/90 backgrounds and backdrop-blur effects
+  - Gradient icons (blue-500 to purple-600) for visual consistency
+  - White text for headers, slate-300 for secondary text, slate-400 for tertiary
+  - Gradient buttons (blue-600 to purple-600) with hover states
+  - Border styling using slate-700 for subtle definition
+- Updated all pages: login, forgot-password, reset-password, dashboard, results
+- Enhanced visual hierarchy with proper color contrast for accessibility
+- Modern translucent glass-morphism effects for professional appearance
+
 ## User Preferences
 
 Preferred communication style: Simple, everyday language.

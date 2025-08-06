@@ -66,9 +66,9 @@ export default function DashboardPage() {
   };
 
   return (
-    <div className="min-h-screen bg-gray-50">
+    <div className="min-h-screen bg-gradient-to-br from-slate-900 via-purple-900 to-slate-900">
       {/* Header */}
-      <header className="bg-white shadow-sm border-b border-gray-200">
+      <header className="bg-slate-800/90 backdrop-blur-sm shadow-xl border-b border-slate-700">
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
           <div className="flex justify-between items-center h-16">
             <div className="flex items-center">
@@ -76,21 +76,21 @@ export default function DashboardPage() {
                 variant="ghost"
                 size="sm"
                 onClick={() => setSidebarOpen(true)}
-                className="p-2 rounded-lg hover:bg-gray-100 transition-colors lg:hidden mr-4"
+                className="p-2 rounded-lg hover:bg-slate-700 transition-colors lg:hidden mr-4"
                 data-testid="button-menu"
               >
-                <Menu className="h-5 w-5 text-gray-600" />
+                <Menu className="h-5 w-5 text-slate-300" />
               </Button>
               <div className="flex items-center">
-                <div className="h-8 w-8 bg-primary-500 rounded-lg flex items-center justify-center mr-3">
+                <div className="h-8 w-8 bg-gradient-to-r from-blue-500 to-purple-600 rounded-lg flex items-center justify-center mr-3">
                   <FileText className="h-4 w-4 text-white" />
                 </div>
-                <h1 className="text-xl font-semibold text-gray-900">PDF Insight Extractor</h1>
+                <h1 className="text-xl font-semibold text-white">PDF Insight Extractor</h1>
               </div>
             </div>
             
             <div className="flex items-center space-x-4">
-              <div className="flex items-center text-sm text-gray-600">
+              <div className="flex items-center text-sm text-slate-300">
                 <User className="h-4 w-4 mr-2" />
                 <span data-testid="text-user-email">{user?.email}</span>
               </div>
@@ -98,10 +98,10 @@ export default function DashboardPage() {
                 variant="ghost"
                 size="sm"
                 onClick={logout}
-                className="p-2 rounded-lg hover:bg-gray-100 transition-colors"
+                className="p-2 rounded-lg hover:bg-slate-700 transition-colors"
                 data-testid="button-logout"
               >
-                <LogOut className="h-4 w-4 text-gray-600" />
+                <LogOut className="h-4 w-4 text-slate-300" />
               </Button>
             </div>
           </div>
@@ -127,15 +127,15 @@ export default function DashboardPage() {
 
             {/* Selected Document Preview */}
             {selectedDocument && !selectedDocument.summary && (
-              <Card className="border border-gray-200">
+              <Card className="border border-slate-700 bg-slate-800/90 backdrop-blur-sm shadow-2xl">
                 <CardContent className="p-6">
                   <div className="flex items-center justify-between mb-4">
-                    <h3 className="text-lg font-semibold text-gray-900">Ready for Analysis</h3>
+                    <h3 className="text-lg font-semibold text-white">Ready for Analysis</h3>
                     <Button
                       variant="ghost"
                       size="sm"
                       onClick={() => setSelectedDocument(null)}
-                      className="text-gray-400 hover:text-gray-600"
+                      className="text-slate-400 hover:text-slate-200"
                       data-testid="button-clear-selection"
                     >
                       <span className="sr-only">Clear selection</span>
@@ -143,16 +143,16 @@ export default function DashboardPage() {
                     </Button>
                   </div>
                   
-                  <div className="flex items-center space-x-4 p-4 bg-gray-50 rounded-lg mb-4">
-                    <div className="h-12 w-12 bg-red-100 rounded-lg flex items-center justify-center">
-                      <FileText className="h-6 w-6 text-red-500" />
+                  <div className="flex items-center space-x-4 p-4 bg-slate-700/50 rounded-lg mb-4">
+                    <div className="h-12 w-12 bg-gradient-to-r from-blue-500 to-purple-600 rounded-lg flex items-center justify-center">
+                      <FileText className="h-6 w-6 text-white" />
                     </div>
                     <div className="flex-1 min-w-0">
-                      <p className="text-sm font-medium text-gray-900 truncate" data-testid="text-selected-title">
+                      <p className="text-sm font-medium text-white truncate" data-testid="text-selected-title">
                         {selectedDocument.title || 'Untitled Document'}
                       </p>
                       {selectedDocument.authors && (
-                        <p className="text-sm text-gray-500" data-testid="text-selected-authors">
+                        <p className="text-sm text-slate-300" data-testid="text-selected-authors">
                           {selectedDocument.authors}
                         </p>
                       )}
@@ -163,7 +163,7 @@ export default function DashboardPage() {
                     <Button
                       onClick={() => handleAnalyzeDocument(selectedDocument)}
                       disabled={isAnalyzing}
-                      className="bg-secondary-500 hover:bg-secondary-600"
+                      className="bg-gradient-to-r from-blue-600 to-purple-600 hover:from-blue-700 hover:to-purple-700 text-white font-semibold shadow-lg"
                       data-testid="button-analyze"
                     >
                       {isAnalyzing ? (

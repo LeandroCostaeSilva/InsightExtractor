@@ -206,10 +206,10 @@ export default function ResultsPage({ params }: ResultsPageProps) {
 
   if (isLoading) {
     return (
-      <div className="min-h-screen bg-gray-50 flex items-center justify-center">
+      <div className="min-h-screen bg-gradient-to-br from-slate-900 via-purple-900 to-slate-900 flex items-center justify-center">
         <div className="text-center">
-          <div className="animate-spin rounded-full h-8 w-8 border-b-2 border-primary-500 mx-auto mb-4"></div>
-          <p className="text-gray-600">Loading document...</p>
+          <div className="animate-spin rounded-full h-8 w-8 border-b-2 border-blue-500 mx-auto mb-4"></div>
+          <p className="text-slate-300">Loading document...</p>
         </div>
       </div>
     );
@@ -217,11 +217,11 @@ export default function ResultsPage({ params }: ResultsPageProps) {
 
   if (!document) {
     return (
-      <div className="min-h-screen bg-gray-50 flex items-center justify-center">
+      <div className="min-h-screen bg-gradient-to-br from-slate-900 via-purple-900 to-slate-900 flex items-center justify-center">
         <div className="text-center">
-          <FileText className="h-12 w-12 text-gray-300 mx-auto mb-4" />
-          <p className="text-gray-600">Document not found</p>
-          <Button onClick={handleGoBack} className="mt-4" data-testid="button-go-back">
+          <FileText className="h-12 w-12 text-slate-400 mx-auto mb-4" />
+          <p className="text-slate-300">Document not found</p>
+          <Button onClick={handleGoBack} className="mt-4 bg-gradient-to-r from-blue-600 to-purple-600 hover:from-blue-700 hover:to-purple-700 text-white font-semibold shadow-lg" data-testid="button-go-back">
             Go Back
           </Button>
         </div>
@@ -230,9 +230,9 @@ export default function ResultsPage({ params }: ResultsPageProps) {
   }
 
   return (
-    <div className="min-h-screen bg-gray-50">
+    <div className="min-h-screen bg-gradient-to-br from-slate-900 via-purple-900 to-slate-900">
       {/* Header */}
-      <header className="bg-white shadow-sm border-b border-gray-200">
+      <header className="bg-slate-800/90 backdrop-blur-sm shadow-xl border-b border-slate-700">
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
           <div className="flex justify-between items-center h-16">
             <div className="flex items-center">
@@ -240,16 +240,16 @@ export default function ResultsPage({ params }: ResultsPageProps) {
                 variant="ghost"
                 size="sm"
                 onClick={handleGoBack}
-                className="p-2 rounded-lg hover:bg-gray-100 transition-colors mr-4"
+                className="p-2 rounded-lg hover:bg-slate-700 transition-colors mr-4"
                 data-testid="button-back"
               >
-                <ArrowLeft className="h-4 w-4 text-gray-600" />
+                <ArrowLeft className="h-4 w-4 text-slate-300" />
               </Button>
               <div className="flex items-center">
-                <div className="h-8 w-8 bg-primary-500 rounded-lg flex items-center justify-center mr-3">
+                <div className="h-8 w-8 bg-gradient-to-r from-blue-500 to-purple-600 rounded-lg flex items-center justify-center mr-3">
                   <FileText className="h-4 w-4 text-white" />
                 </div>
-                <h1 className="text-xl font-semibold text-gray-900">Extraction Results</h1>
+                <h1 className="text-xl font-semibold text-white">Extraction Results</h1>
               </div>
             </div>
             
@@ -258,13 +258,13 @@ export default function ResultsPage({ params }: ResultsPageProps) {
                 variant="ghost"
                 size="sm"
                 onClick={handleDownload}
-                className="flex items-center text-sm text-gray-600 hover:text-gray-900"
+                className="flex items-center text-sm text-slate-300 hover:text-white"
                 data-testid="button-download"
               >
                 <Download className="h-4 w-4 mr-2" />
                 Download PDF
               </Button>
-              <div className="flex items-center text-sm text-gray-600">
+              <div className="flex items-center text-sm text-slate-300">
                 <User className="h-4 w-4 mr-2" />
                 <span data-testid="text-user-email">{user?.email}</span>
               </div>
@@ -275,14 +275,14 @@ export default function ResultsPage({ params }: ResultsPageProps) {
 
       <main className="max-w-4xl mx-auto p-6">
         {/* Document Header */}
-        <Card className="mb-6">
+        <Card className="mb-6 bg-slate-800/90 backdrop-blur-sm border-slate-700 shadow-2xl">
           <CardContent className="p-6">
             <div className="flex items-start justify-between">
               <div className="flex-1">
-                <h1 className="text-2xl font-bold text-gray-900 mb-2" data-testid="text-document-title">
+                <h1 className="text-2xl font-bold text-white mb-2" data-testid="text-document-title">
                   {document.title || 'Untitled Document'}
                 </h1>
-                <div className="flex flex-wrap items-center gap-4 text-sm text-gray-600 mb-4">
+                <div className="flex flex-wrap items-center gap-4 text-sm text-slate-300 mb-4">
                   {document.authors && (
                     <div className="flex items-center">
                       <Users className="h-4 w-4 mr-2" />
@@ -306,8 +306,8 @@ export default function ResultsPage({ params }: ResultsPageProps) {
                 </div>
               </div>
               <div className="ml-6">
-                <div className="h-16 w-16 bg-red-100 rounded-lg flex items-center justify-center">
-                  <FileText className="h-8 w-8 text-red-500" />
+                <div className="h-16 w-16 bg-gradient-to-r from-blue-500 to-purple-600 rounded-lg flex items-center justify-center">
+                  <FileText className="h-8 w-8 text-white" />
                 </div>
               </div>
             </div>
@@ -317,17 +317,17 @@ export default function ResultsPage({ params }: ResultsPageProps) {
         <div className="grid grid-cols-1 lg:grid-cols-3 gap-6">
           {/* Summary */}
           <div className="lg:col-span-2">
-            <Card className="mb-6">
+            <Card className="mb-6 bg-slate-800/90 backdrop-blur-sm border-slate-700 shadow-2xl">
               <CardContent className="p-6">
-                <h2 className="text-xl font-semibold text-gray-900 mb-4 flex items-center">
-                  <FileText className="h-5 w-5 text-primary-500 mr-3" />
+                <h2 className="text-xl font-semibold text-white mb-4 flex items-center">
+                  <FileText className="h-5 w-5 text-blue-400 mr-3" />
                   Resumo Executivo
                 </h2>
-                <div className="prose prose-sm max-w-none text-gray-700" data-testid="text-summary">
+                <div className="prose prose-sm max-w-none text-slate-200" data-testid="text-summary">
                   {document.summary ? (
                     <div className="whitespace-pre-wrap">{document.summary}</div>
                   ) : (
-                    <p className="text-gray-500 italic">Nenhum resumo disponível. O documento pode não ter sido analisado ainda.</p>
+                    <p className="text-slate-400 italic">Nenhum resumo disponível. O documento pode não ter sido analisado ainda.</p>
                   )}
                 </div>
               </CardContent>
@@ -336,24 +336,24 @@ export default function ResultsPage({ params }: ResultsPageProps) {
 
           {/* Key Insights */}
           <div>
-            <Card>
+            <Card className="bg-slate-800/90 backdrop-blur-sm border-slate-700 shadow-2xl">
               <CardContent className="p-6">
-                <h2 className="text-xl font-semibold text-gray-900 mb-4 flex items-center">
-                  <Lightbulb className="h-5 w-5 text-accent-500 mr-3" />
+                <h2 className="text-xl font-semibold text-white mb-4 flex items-center">
+                  <Lightbulb className="h-5 w-5 text-purple-400 mr-3" />
                   Principais Insights
                 </h2>
                 <div className="space-y-4" data-testid="list-insights">
                   {document.insights && Array.isArray(document.insights) ? (
                     document.insights.map((insight, index) => (
                       <div key={index} className="flex items-start space-x-3">
-                        <div className="flex-shrink-0 w-2 h-2 bg-primary-500 rounded-full mt-2"></div>
-                        <p className="text-sm text-gray-700" data-testid={`text-insight-${index}`}>
+                        <div className="flex-shrink-0 w-2 h-2 bg-purple-400 rounded-full mt-2"></div>
+                        <p className="text-sm text-slate-200" data-testid={`text-insight-${index}`}>
                           {insight}
                         </p>
                       </div>
                     ))
                   ) : (
-                    <p className="text-gray-500 italic text-sm">
+                    <p className="text-slate-400 italic text-sm">
                       Nenhum insight disponível. O documento pode não ter sido analisado ainda.
                     </p>
                   )}
@@ -366,8 +366,8 @@ export default function ResultsPage({ params }: ResultsPageProps) {
         {/* Action Buttons */}
         <div className="mt-8 flex flex-col sm:flex-row gap-4 justify-center">
           <Button
-            onClick={handleProcessNew}
-            className="bg-primary-500 hover:bg-primary-600"
+            onClick={handleGoBack}
+            className="bg-gradient-to-r from-blue-600 to-purple-600 hover:from-blue-700 hover:to-purple-700 text-white font-semibold shadow-lg"
             data-testid="button-process-new"
           >
             <Plus className="h-4 w-4 mr-2" />
@@ -377,7 +377,7 @@ export default function ResultsPage({ params }: ResultsPageProps) {
             variant="outline"
             onClick={handleExportPDF}
             data-testid="button-export-pdf"
-            className="bg-green-50 hover:bg-green-100 text-green-700 border-green-200"
+            className="border-slate-600 text-slate-200 hover:bg-slate-700 hover:text-white"
           >
             <FileDown className="h-4 w-4 mr-2" />
             Exportar PDF
