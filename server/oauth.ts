@@ -5,10 +5,18 @@ import jwt from 'jsonwebtoken';
 
 // Configure Google OAuth Strategy
 if (process.env.GOOGLE_CLIENT_ID && process.env.GOOGLE_CLIENT_SECRET) {
+  // Dynamic callback URL based on environment
+  const isDevelopment = process.env.NODE_ENV === 'development';
+  const baseURL = isDevelopment 
+    ? `http://localhost:${process.env.PORT || 5000}`
+    : `https://${process.env.REPL_SLUG}.${process.env.REPL_OWNER}.replit.app`;
+  
+  console.log(`OAuth Callback URL: ${baseURL}/api/auth/google/callback`);
+  
   passport.use(new GoogleStrategy({
     clientID: process.env.GOOGLE_CLIENT_ID,
     clientSecret: process.env.GOOGLE_CLIENT_SECRET,
-    callbackURL: "https://insightextractor.replit.app/api/auth/google/callback"
+    callbackURL: `${baseURL}/api/auth/google/callback`
   },
   async (accessToken, refreshToken, profile, done) => {
     try {
