@@ -275,42 +275,100 @@ export async function registerRoutes(app: Express): Promise<Server> {
         return res.status(403).json({ message: "Access denied" });
       }
 
-      // Extract PDF content for analysis
-      const pdfData = await extractPDFContent(document.filePath);
-      
-      // Analyze with OpenAI
-      const analysis = await analyzeDocument(pdfData.text, {
-        title: document.title || undefined,
-        authors: document.authors || undefined,
-        publishedAt: document.publishedAt || undefined,
-      });
+      let tempFilePath: string | null = null;
+      let pdfData: any;
 
-      // Validate publishedAt date from analysis
-      let validAnalysisDate: Date | undefined = document.publishedAt || undefined;
-      if (analysis.metadata.publishedAt) {
-        const analysisDate = new Date(analysis.metadata.publishedAt);
-        if (!isNaN(analysisDate.getTime())) {
-          validAnalysisDate = analysisDate;
+      try {
+        // Check if file exists locally first
+        if (fs.existsSync(document.filePath)) {
+          console.log("Using local file for analysis:", document.filePath);
+          pdfData = await extractPDFContent(document.filePath);
+        } 
+        // If not local and we have object storage path, download temporarily
+        else if (document.objectStoragePath) {
+          console.log("Downloading from object storage for analysis:", document.objectStoragePath);
+          const objectStorageService = new ObjectStorageService();
+          
+          // Create temp file path
+          tempFilePath = path.join(process.cwd(), 'uploads', `temp-${Date.now()}-${document.originalFileName || 'document.pdf'}`);
+          
+          // Download file from object storage to temp location
+          try {
+            // Extract document ID and filename from object storage path
+            // Path format: /bucket/documents/documentId/filename
+            const pathParts = document.objectStoragePath.split('/');
+            const documentId = pathParts[pathParts.length - 2];
+            const filename = pathParts[pathParts.length - 1];
+            
+            const objectFile = await objectStorageService.getDocumentFile(documentId, filename);
+            const writeStream = fs.createWriteStream(tempFilePath);
+            const readStream = objectFile.createReadStream();
+            
+            await new Promise<void>((resolve, reject) => {
+              readStream.pipe(writeStream);
+              writeStream.on('finish', resolve);
+              writeStream.on('error', reject);
+              readStream.on('error', reject);
+            });
+          } catch (objectError) {
+            console.error("Error downloading from object storage:", objectError);
+            throw new Error("Failed to download PDF from object storage");
+          }
+          
+          pdfData = await extractPDFContent(tempFilePath);
+        } else {
+          throw new Error("PDF file not found in local storage or object storage");
+        }
+      } catch (fileError) {
+        console.error("Error accessing PDF file:", fileError);
+        throw new Error("Unable to access PDF file for analysis");
+      }
+      
+      try {
+        // Analyze with OpenAI
+        const analysis = await analyzeDocument(pdfData.text, {
+          title: document.title || undefined,
+          authors: document.authors || undefined,
+          publishedAt: document.publishedAt || undefined,
+        });
+
+        // Validate publishedAt date from analysis
+        let validAnalysisDate: Date | undefined = document.publishedAt || undefined;
+        if (analysis.metadata.publishedAt) {
+          const analysisDate = new Date(analysis.metadata.publishedAt);
+          if (!isNaN(analysisDate.getTime())) {
+            validAnalysisDate = analysisDate;
+          }
+        }
+
+        // Update document with analysis results
+        const updatedDocument = await storage.updateDocument(document.id, {
+          title: analysis.metadata.title || document.title,
+          authors: analysis.metadata.authors || document.authors,
+          publishedAt: validAnalysisDate,
+          summary: analysis.summary,
+          insights: analysis.insights,
+        });
+
+        // Create extraction record
+        await storage.createExtraction({
+          documentId: document.id,
+          summary: analysis.summary,
+          insights: analysis.insights,
+        });
+
+        res.json(updatedDocument);
+      } finally {
+        // Clean up temporary file if it was created
+        if (tempFilePath && fs.existsSync(tempFilePath)) {
+          try {
+            fs.unlinkSync(tempFilePath);
+            console.log("Cleaned up temporary file:", tempFilePath);
+          } catch (cleanupError) {
+            console.error("Error cleaning up temp file:", cleanupError);
+          }
         }
       }
-
-      // Update document with analysis results
-      const updatedDocument = await storage.updateDocument(document.id, {
-        title: analysis.metadata.title || document.title,
-        authors: analysis.metadata.authors || document.authors,
-        publishedAt: validAnalysisDate,
-        summary: analysis.summary,
-        insights: analysis.insights,
-      });
-
-      // Create extraction record
-      await storage.createExtraction({
-        documentId: document.id,
-        summary: analysis.summary,
-        insights: analysis.insights,
-      });
-
-      res.json(updatedDocument);
     } catch (error: any) {
       console.error("Analysis error:", error);
       res.status(500).json({ message: error.message || "Analysis failed" });
