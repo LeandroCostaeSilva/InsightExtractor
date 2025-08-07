@@ -169,14 +169,14 @@ export default function DashboardPage() {
             {/* Selected Document Preview */}
             {selectedDocument && !selectedDocument.summary && (
               <Card className="border border-slate-700 bg-slate-800/90 backdrop-blur-sm shadow-2xl">
-                <CardContent className="p-6">
-                  <div className="flex items-center justify-between mb-4">
-                    <h3 className="text-lg font-semibold text-white">Ready for Analysis</h3>
+                <CardContent className="p-4 md:p-6">
+                  <div className="flex items-center justify-between mb-6">
+                    <h3 className="text-lg font-semibold text-white">Pronto para Análise</h3>
                     <Button
                       variant="ghost"
                       size="sm"
                       onClick={() => setSelectedDocument(null)}
-                      className="text-slate-400 hover:text-slate-200"
+                      className="text-slate-400 hover:text-slate-200 hover:bg-slate-700"
                       data-testid="button-clear-selection"
                     >
                       <span className="sr-only">Clear selection</span>
@@ -184,41 +184,81 @@ export default function DashboardPage() {
                     </Button>
                   </div>
                   
-                  <div className="flex items-center space-x-4 p-4 bg-slate-700/50 rounded-lg mb-4">
-                    <div className="h-12 w-12 bg-gradient-to-r from-blue-500 to-purple-600 rounded-lg flex items-center justify-center">
-                      <FileText className="h-6 w-6 text-white" />
-                    </div>
-                    <div className="flex-1 min-w-0">
-                      <p className="text-sm font-medium text-white truncate" data-testid="text-selected-title">
-                        {selectedDocument.title || 'Untitled Document'}
-                      </p>
-                      {selectedDocument.authors && (
-                        <p className="text-sm text-slate-300" data-testid="text-selected-authors">
-                          {selectedDocument.authors}
+                  {/* Mobile Layout */}
+                  <div className="md:hidden max-w-sm mx-auto space-y-6">
+                    <div className="bg-slate-700/50 backdrop-blur-sm rounded-lg p-6 text-center border border-slate-600">
+                      <div className="h-16 w-16 bg-gradient-to-r from-blue-500 to-purple-600 rounded-xl flex items-center justify-center mx-auto mb-4">
+                        <FileText className="h-8 w-8 text-white" />
+                      </div>
+                      <div className="space-y-2">
+                        <p className="text-base font-medium text-white break-words" data-testid="text-selected-title">
+                          {selectedDocument.title || 'Documento sem título'}
                         </p>
-                      )}
+                        {selectedDocument.authors && (
+                          <p className="text-sm text-slate-300" data-testid="text-selected-authors">
+                            {selectedDocument.authors}
+                          </p>
+                        )}
+                      </div>
                     </div>
-                  </div>
-
-                  <div className="text-center">
                     <Button
                       onClick={() => handleAnalyzeDocument(selectedDocument)}
                       disabled={isAnalyzing}
-                      className="bg-gradient-to-r from-blue-600 to-purple-600 hover:from-blue-700 hover:to-purple-700 text-white font-semibold shadow-lg"
+                      className="w-full bg-gradient-to-r from-green-600 to-blue-600 hover:from-green-700 hover:to-blue-700 text-white font-bold py-4 text-lg shadow-xl rounded-xl"
                       data-testid="button-analyze"
                     >
                       {isAnalyzing ? (
                         <>
-                          <Loader2 className="h-4 w-4 mr-2 animate-spin" />
-                          Analyzing...
+                          <Loader2 className="h-6 w-6 mr-3 animate-spin" />
+                          Analisando...
                         </>
                       ) : (
                         <>
-                          <Sparkles className="h-4 w-4 mr-2" />
-                          Run AI Analysis
+                          <Sparkles className="h-6 w-6 mr-3" />
+                          Iniciar Análise IA
                         </>
                       )}
                     </Button>
+                  </div>
+
+                  {/* Desktop Layout */}
+                  <div className="hidden md:block">
+                    <div className="flex items-center space-x-4 p-4 bg-slate-700/50 rounded-lg mb-6">
+                      <div className="h-12 w-12 bg-gradient-to-r from-blue-500 to-purple-600 rounded-lg flex items-center justify-center">
+                        <FileText className="h-6 w-6 text-white" />
+                      </div>
+                      <div className="flex-1 min-w-0">
+                        <p className="text-sm font-medium text-white truncate" data-testid="text-selected-title-desktop">
+                          {selectedDocument.title || 'Documento sem título'}
+                        </p>
+                        {selectedDocument.authors && (
+                          <p className="text-sm text-slate-300" data-testid="text-selected-authors-desktop">
+                            {selectedDocument.authors}
+                          </p>
+                        )}
+                      </div>
+                    </div>
+
+                    <div className="text-center">
+                      <Button
+                        onClick={() => handleAnalyzeDocument(selectedDocument)}
+                        disabled={isAnalyzing}
+                        className="bg-gradient-to-r from-green-600 to-blue-600 hover:from-green-700 hover:to-blue-700 text-white font-semibold shadow-lg"
+                        data-testid="button-analyze-desktop"
+                      >
+                        {isAnalyzing ? (
+                          <>
+                            <Loader2 className="h-4 w-4 mr-2 animate-spin" />
+                            Analisando...
+                          </>
+                        ) : (
+                          <>
+                            <Sparkles className="h-4 w-4 mr-2" />
+                            Iniciar Análise IA
+                          </>
+                        )}
+                      </Button>
+                    </div>
                   </div>
                 </CardContent>
               </Card>
