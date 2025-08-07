@@ -70,14 +70,55 @@ export default function DashboardPage() {
       {/* Header */}
       <header className="bg-slate-800/90 backdrop-blur-sm shadow-xl border-b border-slate-700">
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-          <div className="flex justify-between items-center h-16">
+          {/* Mobile/Tablet Layout */}
+          <div className="md:hidden">
+            <div className="flex justify-between items-center h-20">
+              <div className="flex items-center flex-1">
+                <Button
+                  variant="ghost"
+                  size="lg"
+                  onClick={() => setSidebarOpen(true)}
+                  className="p-3 rounded-lg hover:bg-slate-700 transition-colors mr-4"
+                  data-testid="button-menu"
+                >
+                  <Menu className="h-6 w-6 text-slate-300" />
+                </Button>
+                <div className="flex items-center flex-1">
+                  <div className="h-10 w-10 bg-gradient-to-r from-blue-500 to-purple-600 rounded-lg flex items-center justify-center mr-3">
+                    <FileText className="h-5 w-5 text-white" />
+                  </div>
+                  <h1 className="text-lg font-semibold text-white truncate">PDF Insight</h1>
+                </div>
+              </div>
+              
+              <Button
+                onClick={logout}
+                className="bg-gradient-to-r from-red-600 to-red-700 hover:from-red-700 hover:to-red-800 text-white font-medium px-4 py-2 rounded-lg shadow-lg ml-2"
+                data-testid="button-logout"
+              >
+                <LogOut className="h-4 w-4 mr-2" />
+                Sair
+              </Button>
+            </div>
+            
+            {/* User info row on mobile */}
+            <div className="pb-3 border-t border-slate-700 pt-3">
+              <div className="flex items-center justify-center text-sm text-slate-300">
+                <User className="h-4 w-4 mr-2" />
+                <span data-testid="text-user-email" className="truncate">{user?.email}</span>
+              </div>
+            </div>
+          </div>
+          
+          {/* Desktop Layout */}
+          <div className="hidden md:flex justify-between items-center h-16">
             <div className="flex items-center">
               <Button
                 variant="ghost"
                 size="sm"
                 onClick={() => setSidebarOpen(true)}
                 className="p-2 rounded-lg hover:bg-slate-700 transition-colors lg:hidden mr-4"
-                data-testid="button-menu"
+                data-testid="button-menu-desktop"
               >
                 <Menu className="h-5 w-5 text-slate-300" />
               </Button>
@@ -92,14 +133,14 @@ export default function DashboardPage() {
             <div className="flex items-center space-x-4">
               <div className="flex items-center text-sm text-slate-300">
                 <User className="h-4 w-4 mr-2" />
-                <span data-testid="text-user-email">{user?.email}</span>
+                <span data-testid="text-user-email-desktop">{user?.email}</span>
               </div>
               <Button
                 variant="ghost"
                 size="sm"
                 onClick={logout}
                 className="p-2 rounded-lg hover:bg-slate-700 transition-colors"
-                data-testid="button-logout"
+                data-testid="button-logout-desktop"
               >
                 <LogOut className="h-4 w-4 text-slate-300" />
               </Button>

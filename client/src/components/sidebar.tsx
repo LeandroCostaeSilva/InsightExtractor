@@ -51,26 +51,26 @@ export function Sidebar({ documents, isOpen, onClose, onSelectDocument, classNam
       {/* Sidebar */}
       <aside 
         className={cn(
-          "w-80 bg-white shadow-sm border-r border-gray-200 fixed lg:static inset-y-0 left-0 z-50 transform transition-transform duration-300 ease-in-out flex flex-col",
+          "w-80 md:w-96 bg-slate-800/95 backdrop-blur-sm shadow-2xl border-r border-slate-700 fixed lg:static inset-y-0 left-0 z-50 transform transition-transform duration-300 ease-in-out flex flex-col",
           isOpen ? "translate-x-0" : "-translate-x-full lg:translate-x-0",
           className
         )}
       >
         {/* Header */}
-        <div className="p-6 border-b border-gray-200">
+        <div className="p-6 border-b border-slate-700">
           <div className="flex items-center justify-between">
             <div>
-              <h2 className="text-lg font-semibold text-gray-900 mb-2">Document History</h2>
-              <p className="text-sm text-gray-600">Your uploaded PDFs and extractions</p>
+              <h2 className="text-lg font-semibold text-white mb-2">Histórico de Documentos</h2>
+              <p className="text-sm text-slate-300">Seus PDFs enviados e análises</p>
             </div>
             <Button
               variant="ghost"
               size="sm"
               onClick={onClose}
-              className="lg:hidden"
+              className="lg:hidden text-slate-300 hover:text-white hover:bg-slate-700"
               data-testid="button-close-sidebar"
             >
-              <X className="h-4 w-4" />
+              <X className="h-5 w-5" />
             </Button>
           </div>
         </div>
@@ -80,24 +80,24 @@ export function Sidebar({ documents, isOpen, onClose, onSelectDocument, classNam
           <div className="space-y-3">
             {documents.length === 0 ? (
               <div className="text-center py-8">
-                <FileText className="h-12 w-12 text-gray-300 mx-auto mb-4" />
-                <p className="text-sm text-gray-500">No documents uploaded yet</p>
+                <FileText className="h-12 w-12 text-slate-500 mx-auto mb-4" />
+                <p className="text-sm text-slate-400">Nenhum documento enviado ainda</p>
               </div>
             ) : (
               documents.map((document) => (
                 <div
                   key={document.id}
-                  className="bg-gray-50 rounded-lg p-4 hover:bg-gray-100 transition-colors cursor-pointer"
+                  className="bg-slate-700/50 backdrop-blur-sm rounded-lg p-4 hover:bg-slate-700/70 transition-colors cursor-pointer border border-slate-600"
                   onClick={() => handleSelectDocument(document)}
                   data-testid={`card-document-${document.id}`}
                 >
                   <div className="flex items-start justify-between mb-2">
                     <div className="flex-1 min-w-0">
-                      <h3 className="text-sm font-medium text-gray-900 truncate" data-testid={`text-title-${document.id}`}>
-                        {document.title || 'Untitled Document'}
+                      <h3 className="text-sm font-medium text-white truncate" data-testid={`text-title-${document.id}`}>
+                        {document.title || 'Documento sem título'}
                       </h3>
                       {document.authors && (
-                        <p className="text-xs text-gray-600 mt-1" data-testid={`text-authors-${document.id}`}>
+                        <p className="text-xs text-slate-300 mt-1" data-testid={`text-authors-${document.id}`}>
                           {document.authors}
                         </p>
                       )}
@@ -107,13 +107,13 @@ export function Sidebar({ documents, isOpen, onClose, onSelectDocument, classNam
                       size="sm"
                       onClick={(e) => handleDownload(document, e)}
                       disabled={downloadingId === document.id}
-                      className="ml-2 p-1 h-auto"
+                      className="ml-2 p-1 h-auto text-slate-400 hover:text-white hover:bg-slate-600"
                       data-testid={`button-download-${document.id}`}
                     >
-                      <Download className="h-3 w-3 text-gray-500" />
+                      <Download className="h-4 w-4" />
                     </Button>
                   </div>
-                  <div className="flex items-center justify-between text-xs text-gray-500">
+                  <div className="flex items-center justify-between text-xs text-slate-400">
                     <span data-testid={`text-date-${document.id}`}>
                       {formatDistanceToNow(new Date(document.createdAt), { addSuffix: true })}
                     </span>
@@ -121,7 +121,7 @@ export function Sidebar({ documents, isOpen, onClose, onSelectDocument, classNam
                       <Button
                         variant="ghost"
                         size="sm"
-                        className="text-primary-500 hover:text-primary-600 font-medium p-0 h-auto"
+                        className="text-blue-400 hover:text-blue-300 font-medium p-0 h-auto"
                         onClick={(e) => {
                           e.stopPropagation();
                           handleSelectDocument(document);
@@ -129,7 +129,7 @@ export function Sidebar({ documents, isOpen, onClose, onSelectDocument, classNam
                         data-testid={`button-view-results-${document.id}`}
                       >
                         <Eye className="h-3 w-3 mr-1" />
-                        View Results
+                        Ver Resultados
                       </Button>
                     )}
                   </div>
