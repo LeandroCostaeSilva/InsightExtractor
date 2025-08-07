@@ -81,8 +81,13 @@ PDF Insight Extractor is a complete full-stack web application that allows authe
   - Applied consistent dark theme to sidebar with slate-800/95 background
   - Enhanced document cards with better contrast and hover effects
   - Translated interface elements to Portuguese for better user experience
+- Optimized file upload component for mobile:
+  - Full-width "Enviar PDF" button on mobile with larger touch targets
+  - Separate mobile and desktop layouts for optimal user experience
+  - Mobile-friendly file selection with prominent button styling
+  - Applied consistent dark theme with gradient backgrounds
 - Better touch interaction with larger buttons and improved spacing
-- Separate desktop and mobile layouts for optimal user experience across devices
+- Complete Portuguese translations across all mobile interfaces
 
 ## User Preferences
 

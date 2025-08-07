@@ -95,48 +95,84 @@ export function FileUpload({ onUploadComplete }: FileUploadProps) {
 
   if (selectedFile) {
     return (
-      <Card className="border border-gray-200">
-        <CardContent className="p-6">
+      <Card className="border border-slate-700 bg-slate-800/90 backdrop-blur-sm shadow-2xl">
+        <CardContent className="p-4 md:p-6">
           <div className="flex items-center justify-between mb-4">
-            <h3 className="text-lg font-semibold text-gray-900">Uploaded File</h3>
+            <h3 className="text-lg font-semibold text-white">Arquivo Selecionado</h3>
             <Button
               variant="ghost"
               size="sm"
               onClick={removeFile}
-              className="text-gray-400 hover:text-gray-600"
+              className="text-slate-400 hover:text-slate-200 hover:bg-slate-700"
               data-testid="button-remove-file"
             >
               <X className="h-4 w-4" />
             </Button>
           </div>
           
-          <div className="flex items-center space-x-4 p-4 bg-gray-50 rounded-lg">
-            <div className="h-12 w-12 bg-red-100 rounded-lg flex items-center justify-center">
-              <FileText className="h-6 w-6 text-red-500" />
+          {/* Mobile Layout */}
+          <div className="md:hidden space-y-4">
+            <div className="flex items-center space-x-4 p-4 bg-slate-700/50 rounded-lg">
+              <div className="h-12 w-12 bg-gradient-to-r from-red-500 to-red-600 rounded-lg flex items-center justify-center">
+                <FileText className="h-6 w-6 text-white" />
+              </div>
+              <div className="flex-1 min-w-0">
+                <p className="text-sm font-medium text-white truncate" data-testid="text-filename">
+                  {selectedFile.name}
+                </p>
+                <p className="text-sm text-slate-300" data-testid="text-filesize">
+                  {(selectedFile.size / (1024 * 1024)).toFixed(2)} MB
+                </p>
+              </div>
+            </div>
+            <Button
+              onClick={handleUpload}
+              disabled={isUploading}
+              className="w-full bg-gradient-to-r from-blue-600 to-purple-600 hover:from-blue-700 hover:to-purple-700 text-white font-semibold py-3 text-base shadow-lg"
+              data-testid="button-upload-pdf"
+            >
+              {isUploading ? (
+                <>
+                  <Loader2 className="h-5 w-5 mr-2 animate-spin" />
+                  Enviando...
+                </>
+              ) : (
+                <>
+                  <CloudUpload className="h-5 w-5 mr-2" />
+                  Enviar PDF
+                </>
+              )}
+            </Button>
+          </div>
+
+          {/* Desktop Layout */}
+          <div className="hidden md:flex items-center space-x-4 p-4 bg-slate-700/50 rounded-lg">
+            <div className="h-12 w-12 bg-gradient-to-r from-red-500 to-red-600 rounded-lg flex items-center justify-center">
+              <FileText className="h-6 w-6 text-white" />
             </div>
             <div className="flex-1 min-w-0">
-              <p className="text-sm font-medium text-gray-900 truncate" data-testid="text-filename">
+              <p className="text-sm font-medium text-white truncate" data-testid="text-filename-desktop">
                 {selectedFile.name}
               </p>
-              <p className="text-sm text-gray-500" data-testid="text-filesize">
+              <p className="text-sm text-slate-300" data-testid="text-filesize-desktop">
                 {(selectedFile.size / (1024 * 1024)).toFixed(2)} MB
               </p>
             </div>
             <Button
               onClick={handleUpload}
               disabled={isUploading}
-              className="bg-secondary-500 hover:bg-secondary-600"
-              data-testid="button-upload-pdf"
+              className="bg-gradient-to-r from-blue-600 to-purple-600 hover:from-blue-700 hover:to-purple-700 text-white font-semibold shadow-lg"
+              data-testid="button-upload-pdf-desktop"
             >
               {isUploading ? (
                 <>
                   <Loader2 className="h-4 w-4 mr-2 animate-spin" />
-                  Uploading...
+                  Enviando...
                 </>
               ) : (
                 <>
                   <CloudUpload className="h-4 w-4 mr-2" />
-                  Upload PDF
+                  Enviar PDF
                 </>
               )}
             </Button>
@@ -147,20 +183,20 @@ export function FileUpload({ onUploadComplete }: FileUploadProps) {
   }
 
   return (
-    <Card className="border border-gray-200">
-      <CardContent className="p-8">
+    <Card className="border border-slate-700 bg-slate-800/90 backdrop-blur-sm shadow-2xl">
+      <CardContent className="p-4 md:p-8">
         <div className="text-center">
-          <div className="mx-auto h-16 w-16 bg-primary-100 rounded-full flex items-center justify-center mb-4">
-            <CloudUpload className="h-8 w-8 text-primary-500" />
+          <div className="mx-auto h-16 w-16 bg-gradient-to-r from-blue-500 to-purple-600 rounded-full flex items-center justify-center mb-4">
+            <CloudUpload className="h-8 w-8 text-white" />
           </div>
-          <h2 className="text-2xl font-semibold text-gray-900 mb-2">Upload PDF Document</h2>
-          <p className="text-gray-600 mb-6">Upload your PDF to extract metadata and generate AI-powered insights</p>
+          <h2 className="text-xl md:text-2xl font-semibold text-white mb-2">Enviar Documento PDF</h2>
+          <p className="text-slate-300 mb-6 text-sm md:text-base">Envie seu PDF para extrair metadados e gerar insights com IA</p>
           
           <div
-            className={`border-2 border-dashed rounded-lg p-8 transition-colors ${
+            className={`border-2 border-dashed rounded-lg p-6 md:p-8 transition-colors ${
               dragActive 
-                ? 'border-primary-400 bg-primary-50' 
-                : 'border-gray-300 hover:border-primary-400'
+                ? 'border-blue-400 bg-blue-500/10' 
+                : 'border-slate-600 hover:border-blue-400 hover:bg-blue-500/5'
             }`}
             onDragEnter={handleDrag}
             onDragLeave={handleDrag}
@@ -177,11 +213,19 @@ export function FileUpload({ onUploadComplete }: FileUploadProps) {
             />
             <label htmlFor="pdfUpload" className="cursor-pointer">
               <div className="flex flex-col items-center">
-                <FileText className="h-16 w-16 text-gray-400 mb-4" />
-                <p className="text-lg font-medium text-gray-700 mb-2">
-                  Choose PDF file or drag and drop
+                <FileText className="h-12 md:h-16 w-12 md:w-16 text-slate-400 mb-4" />
+                <p className="text-base md:text-lg font-medium text-white mb-2">
+                  Escolha um arquivo PDF ou arraste aqui
                 </p>
-                <p className="text-sm text-gray-500">Maximum file size: 10MB</p>
+                <p className="text-sm text-slate-400">Tamanho máximo: 10MB</p>
+                
+                {/* Mobile-friendly upload button */}
+                <div className="mt-4 md:hidden">
+                  <div className="bg-gradient-to-r from-blue-600 to-purple-600 hover:from-blue-700 hover:to-purple-700 text-white font-semibold py-3 px-6 rounded-lg shadow-lg inline-flex items-center">
+                    <CloudUpload className="h-5 w-5 mr-2" />
+                    Selecionar Arquivo
+                  </div>
+                </div>
               </div>
             </label>
           </div>
