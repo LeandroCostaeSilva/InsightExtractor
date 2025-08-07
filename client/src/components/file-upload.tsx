@@ -111,13 +111,13 @@ export function FileUpload({ onUploadComplete }: FileUploadProps) {
           </div>
           
           {/* Mobile Layout */}
-          <div className="md:hidden space-y-4">
-            <div className="flex items-center space-x-4 p-4 bg-slate-700/50 rounded-lg">
-              <div className="h-12 w-12 bg-gradient-to-r from-red-500 to-red-600 rounded-lg flex items-center justify-center">
-                <FileText className="h-6 w-6 text-white" />
+          <div className="md:hidden max-w-sm mx-auto space-y-6">
+            <div className="bg-slate-700/50 backdrop-blur-sm rounded-lg p-6 text-center border border-slate-600">
+              <div className="h-16 w-16 bg-gradient-to-r from-red-500 to-red-600 rounded-xl flex items-center justify-center mx-auto mb-4">
+                <FileText className="h-8 w-8 text-white" />
               </div>
-              <div className="flex-1 min-w-0">
-                <p className="text-sm font-medium text-white truncate" data-testid="text-filename">
+              <div className="space-y-2">
+                <p className="text-base font-medium text-white break-words" data-testid="text-filename">
                   {selectedFile.name}
                 </p>
                 <p className="text-sm text-slate-300" data-testid="text-filesize">
@@ -128,17 +128,17 @@ export function FileUpload({ onUploadComplete }: FileUploadProps) {
             <Button
               onClick={handleUpload}
               disabled={isUploading}
-              className="w-full bg-gradient-to-r from-blue-600 to-purple-600 hover:from-blue-700 hover:to-purple-700 text-white font-semibold py-3 text-base shadow-lg"
+              className="w-full bg-gradient-to-r from-blue-600 to-purple-600 hover:from-blue-700 hover:to-purple-700 text-white font-bold py-4 text-lg shadow-xl rounded-xl"
               data-testid="button-upload-pdf"
             >
               {isUploading ? (
                 <>
-                  <Loader2 className="h-5 w-5 mr-2 animate-spin" />
+                  <Loader2 className="h-6 w-6 mr-3 animate-spin" />
                   Enviando...
                 </>
               ) : (
                 <>
-                  <CloudUpload className="h-5 w-5 mr-2" />
+                  <CloudUpload className="h-6 w-6 mr-3" />
                   Enviar PDF
                 </>
               )}
